@@ -1,0 +1,15 @@
+spring:
+  profile:
+    active: local
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ssafydb?serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ssafy
+    password: ssafy
