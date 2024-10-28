@@ -1,4 +1,4 @@
-package com.him.fpjt.him_backend.excercise.domain;
+package com.him.fpjt.him_backend.exercise.domain;
 
 import lombok.Getter;
 import lombok.ToString;
