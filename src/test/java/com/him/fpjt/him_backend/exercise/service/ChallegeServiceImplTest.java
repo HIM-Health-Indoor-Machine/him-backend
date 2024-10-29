@@ -60,4 +60,20 @@ public class ChallegeServiceImplTest {
         when(challengeDao.insertChallenge(challenge)).thenReturn(0);
         assertFalse(challengeService.createChallenge(challenge));
     }
+
+    @Test
+    @DisplayName("챌린지 삭제 성공 시에 true를 반환한다.")
+    public void removeChallenge_success() {
+        when(challengeDao.deleteTodayChallengeByChallengeId(1L)).thenReturn(1);
+        when(challengeDao.deleteChallenge(1L)).thenReturn(1);
+        assertTrue(challengeService.removeChallenge(1L));
+    }
+
+    @Test
+    @DisplayName("챌린지 삭제 실패 시에 false를 반환한다.")
+    public void removeChallenge_fail() {
+        when(challengeDao.deleteTodayChallengeByChallengeId(1L)).thenReturn(1);
+        when(challengeDao.deleteChallenge(1L)).thenReturn(0);
+        assertFalse(challengeService.removeChallenge(1L));
+    }
 }
