@@ -6,6 +6,9 @@
     INSERT INTO challenge (status, type, start_dt, end_dt, goal_cnt, achieve_cnt, user_id)
         VALUES (#{status}, #{type}, #{startDt}, #{endDt}, #{goalCnt}, #{achievedCnt}, #{userId})
   </insert>
+  <select id="selectChallenge" parameterType="long" resultType="Challenge">
+    SELECT * FROM challenge WHERE id = #{id}
+  </select>
   <delete id="deleteChallenge" parameterType="long">
     DELETE FROM challenge WHERE id = #{id}
   </delete>
