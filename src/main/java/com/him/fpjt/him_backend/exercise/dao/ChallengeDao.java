@@ -6,6 +6,7 @@ import java.util.Map;
 
 public interface ChallengeDao {
     public int insertChallenge(Challenge challenge);
+    public List<Challenge> selectChallengesByStatusAndUserId(Map<String, Object> params);
     public Challenge selectChallenge(long id);
     public int deleteChallenge(long id);
     public int deleteTodayChallengeByChallengeId(long id);

@@ -6,6 +6,17 @@
     INSERT INTO challenge (status, type, start_dt, end_dt, goal_cnt, achieve_cnt, user_id)
         VALUES (#{status}, #{type}, #{startDt}, #{endDt}, #{goalCnt}, #{achievedCnt}, #{userId})
   </insert>
+  <select id="selectChallengesByStatusAndUserId" parameterType="map" resultType="Challenge">
+    SELECT * FROM challenge
+    <trim prefix="WHERE" prefixOverrides="AND | OR">
+        <if test="status != null and status != ''">
+          AND status = #{status}
+        </if>
+        <if test = "userId != null and userId != ''">
+            AND user_id = #{userId}
+        </if>
+    </trim>
+  </select>
   <select id="selectChallenge" parameterType="long" resultType="Challenge">
     SELECT * FROM challenge WHERE id = #{id}
   </select>
