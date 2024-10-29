@@ -1,11 +1,13 @@
 package com.him.fpjt.him_backend.exercise.domain;
 
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
 @ToString
+@AllArgsConstructor
 public class Challenge {
     private long id;
     private ChallengeStatus status;
