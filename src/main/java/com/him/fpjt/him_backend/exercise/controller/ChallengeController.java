@@ -25,7 +25,6 @@ public class ChallengeController {
     }
     @PostMapping
     public ResponseEntity<String> createChallenge(@RequestBody Challenge challenge) {
-        System.out.println(challenge.toString());
         boolean isSave = challengeService.createChallenge(challenge);
         return isSave == true ?
                 ResponseEntity.status(HttpStatus.CREATED).build():
