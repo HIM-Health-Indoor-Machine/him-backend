@@ -1,7 +1,12 @@
 package com.him.fpjt.him_backend.exercise.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.him.fpjt.him_backend.exercise.dao.ChallengeDao;
@@ -10,6 +15,7 @@ import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import com.him.fpjt.him_backend.exercise.domain.ExerciseType;
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,6 +67,16 @@ public class ChallegeServiceImplTest {
         assertFalse(challengeService.createChallenge(challenge));
     }
 
+    @Test
+    @DisplayName("챌린지 id에 따라 챌린지를 조회한다.")
+    void getChallengeDetail() {
+        when(challengeDao.selectChallenge(1L)).thenReturn(mockChallenge);
+
+        Challenge challenge = challengeService.getChallengeDetail(1L);
+
+        assertNotNull(challenge);
+        verify(challengeDao, times(1)).selectChallenge(1L);
+    }
     @Test
     @DisplayName("챌린지 삭제 성공 시에 true를 반환한다.")
     public void removeChallenge_success() {
