@@ -30,6 +30,13 @@ public class ChallengeController {
                 ResponseEntity.status(HttpStatus.CREATED).build():
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("챌린지 저장에 실패했습니다.");
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getChallengeDetail(@PathVariable("id") long id) {
+        Challenge challenges = challengeService.getChallengeDetail(id);
+        return challenges != null ?
+                ResponseEntity.ok().body(challenges):
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body("일치하는 챌린지가 없습니다.");
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeChallenge(@PathVariable("id") long id) {
         boolean isRemoved = challengeService.removeChallenge(id);

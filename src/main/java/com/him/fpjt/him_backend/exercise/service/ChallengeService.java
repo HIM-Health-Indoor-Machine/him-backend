@@ -4,5 +4,6 @@ import com.him.fpjt.him_backend.exercise.domain.Challenge;
 
 public interface ChallengeService {
     public boolean createChallenge(Challenge challenge);
+    public Challenge getChallengeDetail(long id);
     public boolean removeChallenge(long id);
 }

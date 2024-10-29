@@ -18,6 +18,10 @@ public class ChallengeServiceImpl implements ChallengeService {
     public boolean createChallenge(Challenge challenge) {
         return challengeDao.insertChallenge(challenge) > 0 ? true : false;
     }
+    @Override
+    public Challenge getChallengeDetail(long id) {
+        return challengeDao.selectChallenge(id);
+    }
 
     @Override
     @Transactional
