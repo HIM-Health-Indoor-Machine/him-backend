@@ -1,4 +1,4 @@
-package com.him.fpjt.him_backend.excercise.domain;
+package com.him.fpjt.him_backend.exercise.domain;
 
 import java.time.LocalDate;
 import lombok.Getter;
@@ -9,16 +9,16 @@ import lombok.ToString;
 public class Game {
     private long id;
     private LocalDate date;
-    private ExcerciseType type;
+    private ExerciseType type;
     private DifficultyLevel difficultyLevel;
-    private boolean isAchived;
+    private boolean isAchieved;
     private long userId;
 
-    public Game(ExcerciseType type, DifficultyLevel difficultyLevel, boolean isAchived,
+    public Game(ExerciseType type, DifficultyLevel difficultyLevel, boolean isAchieved,
             long userId) {
         this.type = type;
         this.difficultyLevel = difficultyLevel;
-        this.isAchived = isAchived;
+        this.isAchieved = isAchieved;
         this.userId = userId;
         this.date = LocalDate.now();
     }
