@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.him.fpjt.him_backend.exercise.dao.GameDao">
+
+    <!-- 게임 정보 삽입 -->
+    <insert id="insertGame" parameterType="Game">
+        INSERT INTO game
+        VALUES (#{date}, #{type}, #{difficulty_level}, false, #{userId})
+    </insert>
+
+    <!-- 성공 시, 게임 정보 수정 -->
+    <update id="updateGame" parameterType="int">
+        UPDATE game
+        SET is_achieved=true
+        WHERE id=#{id}
+    </update>
+</mapper>
