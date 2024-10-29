@@ -68,6 +68,17 @@ public class ChallegeServiceImplTest {
     }
 
     @Test
+    @DisplayName("status와 userId에 따라 챌린지 목록을 조회한다.")
+    void getChallengeByStatusAndUserId() {
+        when(challengeDao.selectChallengesByStatusAndUserId(anyMap())).thenReturn(List.of(mockChallenge));
+
+        List<Challenge> challenges = challengeService.getChallengeByStatusAndUserId(1L, ChallengeStatus.ONGOING);
+
+        assertEquals(1, challenges.size());
+        verify(challengeDao, times(1)).selectChallengesByStatusAndUserId(anyMap());
+    }
+
+    @Test
     @DisplayName("챌린지 id에 따라 챌린지를 조회한다.")
     void getChallengeDetail() {
         when(challengeDao.selectChallenge(1L)).thenReturn(mockChallenge);
