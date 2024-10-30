@@ -3,7 +3,6 @@ package com.him.fpjt.him_backend.exercise.controller;
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import com.him.fpjt.him_backend.exercise.service.ChallengeService;
-import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
