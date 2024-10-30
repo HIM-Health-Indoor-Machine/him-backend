@@ -26,8 +26,8 @@ public class GameController {
                 new ResponseEntity<String>("Failed to add game", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> modifyGame(@PathVariable("id") int id) {
+    @PutMapping("/{gameId}")
+    public ResponseEntity<String> modifyGame(@PathVariable("gameId") int id) {
         boolean isSave = gameService.modifyGame(id);
         return isSave ?
                 new ResponseEntity<String>("Game updated successfully", HttpStatus.OK) :
