@@ -3,6 +3,7 @@ package com.him.fpjt.him_backend.exercise.controller;
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import com.him.fpjt.him_backend.exercise.service.ChallengeService;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class ChallengeController {
                 ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("챌린지 저장에 실패했습니다.");
     }
     @GetMapping
-    public ResponseEntity<?> getChallengeByStatusAndUserId(@RequestParam("userId") long userId,
+    public ResponseEntity<?> getChallengeByStatusAndUserId(@RequestParam(value = "userId", defaultValue = "true") long userId,
                                                         @RequestParam("status") String status) {
         ChallengeStatus challengeStatus;
         try {
@@ -44,15 +45,15 @@ public class ChallengeController {
                 ResponseEntity.status(HttpStatus.NO_CONTENT).body("챌린지가 없습니다.") :
                 ResponseEntity.ok().body(challenges);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getChallengeDetail(@PathVariable("id") long id) {
+    @GetMapping("/{challengeId}")
+    public ResponseEntity<?> getChallengeDetail(@PathVariable("challengeId") long id) {
         Challenge challenges = challengeService.getChallengeDetail(id);
         return challenges != null ?
                 ResponseEntity.ok().body(challenges):
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body("일치하는 챌린지가 없습니다.");
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> removeChallenge(@PathVariable("id") long id) {
+    @DeleteMapping("/{challengeId}")
+    public ResponseEntity<String> removeChallenge(@PathVariable("challengeId") long id) {
         boolean isRemoved = challengeService.removeChallenge(id);
         return isRemoved == true ?
                 ResponseEntity.ok().build() :
