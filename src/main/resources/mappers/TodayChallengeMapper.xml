@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.him.fpjt.him_backend.exercise.dao.TodayChallengeDao">
+  <insert id="insertTodayChallenge" parameterType="TodayChallenge" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO today_challenge (cnt, challenge_id, date)
+    VALUES (#{cnt}, #{challengeId}, #{date})
+  </insert>
+</mapper>
