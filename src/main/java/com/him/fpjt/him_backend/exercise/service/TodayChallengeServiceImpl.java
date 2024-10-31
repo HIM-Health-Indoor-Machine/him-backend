@@ -4,6 +4,8 @@ import com.him.fpjt.him_backend.exercise.dao.TodayChallengeDao;
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,12 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         }
         return todayChallengeId;
     }
+    @Override
+    public TodayChallenge getTodayChallengeById(long id) {
+        return Optional.ofNullable(todayChallengeDao.selectTodayChallengeById(id))
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 오늘의 챌린지가 존재하지 않습니다."));
+    }
+
     private boolean isTodayChallengeExists(long challengeId, LocalDate date) {
         Map<String, Object> params = Map.of(
                 "challengeId", challengeId,
