@@ -13,4 +13,7 @@
           AND challenge_id = #{challengeId}
       )
   </select>
+  <select id="selectTodayChallengeById" parameterType="long" resultType="TodayChallenge">
+    SELECT * FROM today_challenge WHERE id = #{id}
+  </select>
 </mapper>
