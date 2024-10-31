@@ -1,6 +1,7 @@
 package com.him.fpjt.him_backend.exercise.controller;
 
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
+import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
 import com.him.fpjt.him_backend.exercise.service.TodayChallengeService;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
@@ -9,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,12 +25,13 @@ public class TodayChallengeController {
 
     @PostMapping
     public ResponseEntity<Object> createTodayChallenge(
-            @RequestParam("challengeId") long challengeId) {
-        TodayChallenge todayChallenge = new TodayChallenge(0, challengeId, LocalDate.now());
+            @RequestBody TodayChallengeDto todayChallengeDto) {
+        TodayChallenge todayChallenge = new TodayChallenge(todayChallengeDto.getCnt(), todayChallengeDto.getChallengeId(), todayChallengeDto.getDate());
         try {
             long todayChallengeId = todayChallengeService.createTodayChallenge(todayChallenge);
-
             return ResponseEntity.status(HttpStatus.CREATED).body(todayChallengeId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (RuntimeException e) {
