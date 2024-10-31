@@ -23,7 +23,4 @@
   <delete id="deleteChallenge" parameterType="long">
     DELETE FROM challenge WHERE id = #{id}
   </delete>
-  <delete id="deleteTodayChallengeByChallengeId" parameterType="long">
-    DELETE FROM today_challenge WHERE challenge_id = #{id}
-  </delete>
 </mapper>
