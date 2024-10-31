@@ -9,4 +9,5 @@ public interface ChallengeService {
     public List<Challenge> getChallengeByStatusAndUserId(long userId, ChallengeStatus status);
     public Challenge getChallengeDetail(long id);
     public boolean removeChallenge(long id);
+    public boolean existsChallengeById(long id);
 }

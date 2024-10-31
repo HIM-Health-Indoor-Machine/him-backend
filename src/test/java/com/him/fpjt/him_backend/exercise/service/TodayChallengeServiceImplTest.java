@@ -21,6 +21,8 @@ import org.mockito.MockitoAnnotations;
 public class TodayChallengeServiceImplTest {
     @Mock
     private TodayChallengeDao todayChallengeDao;
+    @Mock
+    private ChallengeService challengeService;
     @InjectMocks
     private TodayChallengeServiceImpl todayChallengeService;
     @BeforeEach
@@ -32,6 +34,8 @@ public class TodayChallengeServiceImplTest {
     @DisplayName("오늘의 챌린지 생성 성공 시 todayChalllengeId를 반환한다.")
     public void createTodayChallenge_success() {
         TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
+
+        when(challengeService.existsChallengeById(1L)).thenReturn(true);
         when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(anyMap())).thenReturn(false);
         when(todayChallengeDao.insertTodayChallenge(todayChallenge)).thenReturn(1L);
 
@@ -41,9 +45,22 @@ public class TodayChallengeServiceImplTest {
         verify(todayChallengeDao).insertTodayChallenge(todayChallenge);
     }
     @Test
+    @DisplayName("존재하지 않는 챌린지 id의 경우, 예외가 발생합니다.")
+    public void createTodayChallenge_notExistChallengeId() {
+        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
+        when(challengeService.existsChallengeById(1L)).thenReturn(false);
+
+        // when & then: 예외 검증
+        assertThrows(IllegalArgumentException.class,
+                () -> todayChallengeService.createTodayChallenge(todayChallenge),
+                "존재하지 않는 챌린지 id 입니다."
+        );
+    }
+    @Test
     @DisplayName("이미 오늘의 챌린지가 있는 경우, 예외가 발생한다.")
     void createTodayChallenge_duplicate() {
         TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
+        when(challengeService.existsChallengeById(1L)).thenReturn(true);
         when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(anyMap())).thenReturn(true);
 
         assertThrows(IllegalStateException.class, () -> todayChallengeService.createTodayChallenge(todayChallenge));

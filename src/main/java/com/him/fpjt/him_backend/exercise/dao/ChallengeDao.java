@@ -10,4 +10,5 @@ public interface ChallengeDao {
     public Challenge selectChallenge(long id);
     public int deleteChallenge(long id);
     public int deleteTodayChallengeByChallengeId(long id);
+    public boolean existsChallengeById(long id);
 }

@@ -21,6 +21,9 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
     @Transactional
     @Override
     public long createTodayChallenge(TodayChallenge todayChallenge) {
+        if(!challengeService.existsChallengeById(todayChallenge.getChallengeId())) {
+            throw new IllegalArgumentException("존재하지 않는 챌린지 id 입니다.");
+        }
         if (isTodayChallengeExists(todayChallenge.getChallengeId(), todayChallenge.getDate())) {
             throw new IllegalStateException("이미 동일한 챌린지가 존재합니다.");
         }
