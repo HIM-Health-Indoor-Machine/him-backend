@@ -5,4 +5,5 @@ import java.util.Map;
 
 public interface TodayChallengeDao {
     public long insertTodayChallenge(TodayChallenge todayChallenge);
+    public boolean existsTodayChallengeByChallengeIdAndDate(Map<String, Object> map);
 }
