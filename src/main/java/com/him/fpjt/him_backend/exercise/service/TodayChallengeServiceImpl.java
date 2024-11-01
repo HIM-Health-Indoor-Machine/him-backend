@@ -39,7 +39,6 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
     }
 
     private boolean isTodayChallengeExists(long challengeId, LocalDate date) {
-        System.out.println(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(challengeId, date));
         return todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(challengeId, date);
     }
 }
