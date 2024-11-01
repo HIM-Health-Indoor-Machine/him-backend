@@ -24,6 +24,12 @@ public class GameController {
         return isSave ?
                 new ResponseEntity<String>("Game added successfully", HttpStatus.OK) :
                 new ResponseEntity<String>("Failed to add game", HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            gameService.createGame(game);
+            return ResponseEntity.ok("게임이 성공적으로 추가되었습니다.");
+        } catch (Exception e) {
+            return new ResponseEntity<>("게임 추가 실패: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{gameId}")

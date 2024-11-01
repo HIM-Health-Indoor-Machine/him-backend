@@ -9,5 +9,6 @@ public interface GameService {
     public boolean createGame(Game game);
 
     public boolean modifyGame(int id);
+    void createGame(Game game) throws Exception;
 
 }

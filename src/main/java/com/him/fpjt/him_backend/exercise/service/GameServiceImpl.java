@@ -20,6 +20,11 @@ public class GameServiceImpl implements GameService {
     @Transactional
     public boolean createGame(Game game) {
         return gameDao.insertGame(game) != 0;
+    public void createGame(Game game) throws Exception {
+        int result = gameDao.insertGame(game);
+        if (result == 0) {
+            throw new Exception("게임 생성에 실패했습니다.");
+        }
     }
 
     @Override

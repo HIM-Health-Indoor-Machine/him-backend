@@ -18,6 +18,7 @@ public class Game {
 
     public Game(ExerciseType type, DifficultyLevel difficultyLevel, boolean isAchieved,
             long userId) {
+    
     public Game(ExerciseType type, DifficultyLevel difficultyLevel, boolean isAchieved, long userId) {
         this.type = type;
         this.difficultyLevel = difficultyLevel;
