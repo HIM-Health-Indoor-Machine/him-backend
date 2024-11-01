@@ -2,6 +2,7 @@ package com.him.fpjt.him_backend.exercise.controller;
 
 import com.him.fpjt.him_backend.exercise.domain.Game;
 import com.him.fpjt.him_backend.exercise.service.GameService;
+import com.him.fpjt.him_backend.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ public class GameController {
     private final GameService gameService;
 
     public GameController(GameService gameService) {
+    public GameController(GameService gameService, UserService userService) {
         this.gameService = gameService;
     }
 
@@ -24,6 +26,12 @@ public class GameController {
         return isSave ?
                 new ResponseEntity<String>("Game added successfully", HttpStatus.OK) :
                 new ResponseEntity<String>("Failed to add game", HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            gameService.createGame(game);
+            return ResponseEntity.ok("게임이 성공적으로 추가되었습니다.");
+        } catch (Exception e) {
+            return new ResponseEntity<>("게임 추가 실패: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{gameId}")
@@ -32,6 +40,14 @@ public class GameController {
         return isSave ?
                 new ResponseEntity<String>("Game updated successfully", HttpStatus.OK) :
                 new ResponseEntity<String>("Failed to update game", HttpStatus.INTERNAL_SERVER_ERROR);
+    @PostMapping("/{achievedGameId}")
+    public ResponseEntity<String> processApplyUserExp(@PathVariable("achievedGameId") long gameId, @RequestParam(value = "userId", required = true) long userId) {
+        try {
+            gameService.applyUserExp(gameId, userId);
+            return ResponseEntity.ok("조건에 따른 경험치 반영이 완료되었습니다.");
+        } catch (Exception e) {
+            return new ResponseEntity<>("경험치 반영 실패: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
