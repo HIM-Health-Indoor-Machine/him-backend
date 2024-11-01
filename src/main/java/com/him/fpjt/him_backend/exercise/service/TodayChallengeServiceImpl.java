@@ -3,7 +3,6 @@ package com.him.fpjt.him_backend.exercise.service;
 import com.him.fpjt.him_backend.exercise.dao.TodayChallengeDao;
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -40,10 +39,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
     }
 
     private boolean isTodayChallengeExists(long challengeId, LocalDate date) {
-        Map<String, Object> params = Map.of(
-                "challengeId", challengeId,
-                "date", date
-        );
-        return todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(params);
+        System.out.println(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(challengeId, date));
+        return todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(challengeId, date);
     }
 }

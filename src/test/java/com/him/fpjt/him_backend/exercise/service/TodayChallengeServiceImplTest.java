@@ -3,7 +3,6 @@ package com.him.fpjt.him_backend.exercise.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +35,7 @@ public class TodayChallengeServiceImplTest {
         TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
 
         when(challengeService.existsChallengeById(1L)).thenReturn(true);
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(anyMap())).thenReturn(false);
+        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(false);
         when(todayChallengeDao.insertTodayChallenge(todayChallenge)).thenReturn(1L);
 
         long resultId = todayChallengeService.createTodayChallenge(todayChallenge);
@@ -61,7 +60,7 @@ public class TodayChallengeServiceImplTest {
     void createTodayChallenge_duplicate() {
         TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
         when(challengeService.existsChallengeById(1L)).thenReturn(true);
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(anyMap())).thenReturn(true);
+        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(true);
 
         assertThrows(IllegalStateException.class, () -> todayChallengeService.createTodayChallenge(todayChallenge));
     }
@@ -70,7 +69,7 @@ public class TodayChallengeServiceImplTest {
     @DisplayName("오늘의 챌린지 생성 실패 시, 예외가 발생한다.")
     void createTodayChallenge_fail() {
         TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(anyMap())).thenReturn(false);
+        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(false);
         when(todayChallengeDao.insertTodayChallenge(todayChallenge)).thenReturn(0L);
 
         assertThrows(RuntimeException.class, () -> todayChallengeService.createTodayChallenge(todayChallenge));
