@@ -8,15 +8,12 @@ import com.him.fpjt.him_backend.user.dao.UserDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 public class GameServiceImpl implements GameService {
 
     private final GameDao gameDao;
     private final UserDao userDao;
 
-    public GameServiceImpl(GameDao gameDao) {
     public GameServiceImpl(GameDao gameDao, UserDao userDao) {
         this.gameDao = gameDao;
         this.userDao = userDao;
@@ -24,8 +21,6 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public boolean createGame(Game game) {
-        return gameDao.insertGame(game) != 0;
     public void createGame(Game game) throws Exception {
         int result = gameDao.insertGame(game);
         if (result == 0) {
@@ -35,8 +30,6 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public boolean modifyGame(int id) {
-        return gameDao.updateGame(id) != 0;
     public void applyUserExp(long gameId) throws Exception {
         Game currentGame = gameDao.findGameById(gameId);
         if (currentGame == null) {
@@ -66,7 +59,6 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-}    private long calculateExpPoints(DifficultyLevel difficultyLevel) {
     private long calculateExpPoints(DifficultyLevel difficultyLevel) {
         return switch (difficultyLevel) {
             case EASY -> 5;

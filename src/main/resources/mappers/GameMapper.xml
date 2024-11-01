@@ -10,7 +10,6 @@
         VALUES (#{date}, #{type}, #{difficultyLevel}, false, #{userId})
     </insert>
 
-    <!-- 특정 게임 ID로 게임 정보 조회 -->
     <!-- 특정 게임 ID로 게임 정보 조회 (userId 포함) -->
     <select id="findGameById" parameterType="long" resultType="Game">
         SELECT * FROM game WHERE id = #{gameId}
@@ -28,7 +27,6 @@
         )
     </select>
 
-    <!-- 특정 게임 ID로 성공 여부를 수정하는 SQL 구문 -->
     <!-- 특정 게임 ID로 성공 여부를 true로 수정하는 SQL 구문 -->
     <update id="updateGameAchievement" parameterType="long">
         UPDATE game
