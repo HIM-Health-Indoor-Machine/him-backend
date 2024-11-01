@@ -1,12 +1,15 @@
 package com.him.fpjt.him_backend.user.domain;
 
 import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
 
 @Getter
 @ToString
+@AllArgsConstructor
 public class Attendence {
     private long id;
     private LocalDate attendDt;
