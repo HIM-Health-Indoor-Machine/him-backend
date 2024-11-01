@@ -1,12 +1,14 @@
 package com.him.fpjt.him_backend.exercise.service;
 
+import com.him.fpjt.him_backend.common.constants.ExpPoints;
 import com.him.fpjt.him_backend.exercise.dao.GameDao;
 import com.him.fpjt.him_backend.exercise.domain.DifficultyLevel;
 import com.him.fpjt.him_backend.exercise.domain.Game;
-import com.him.fpjt.him_backend.exercise.dto.GameDto;
 import com.him.fpjt.him_backend.user.dao.UserDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.NoSuchElementException;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -21,10 +23,10 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void createGame(Game game) throws Exception {
+    public void createGame(Game game) {
         int result = gameDao.insertGame(game);
         if (result == 0) {
-            throw new Exception("게임 생성에 실패했습니다.");
+            throw new IllegalStateException("게임 생성에 실패했습니다.");
         }
     }
 

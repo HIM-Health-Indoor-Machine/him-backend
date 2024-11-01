@@ -25,40 +25,40 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateUserExp_success() {
+    void modifyUserExp_success() {
         long userId = 1L;
         long expPoints = 20L;
 
         when(userDao.updateUserExp(userId, expPoints)).thenReturn(1);
 
-        assertDoesNotThrow(() -> userService.updateUserExp(userId, expPoints));
+        assertDoesNotThrow(() -> userService.modifyUserExp(userId, expPoints));
         verify(userDao, times(1)).updateUserExp(userId, expPoints);
     }
 
     @Test
-    void updateUserExp_failure() {
+    void modifyUserExp_failure() {
         long userId = 1L;
         long expPoints = 20L;
 
         when(userDao.updateUserExp(userId, expPoints)).thenReturn(0);
 
-        Exception exception = assertThrows(Exception.class, () -> userService.updateUserExp(userId, expPoints));
+        Exception exception = assertThrows(Exception.class, () -> userService.modifyUserExp(userId, expPoints));
         verify(userDao, times(1)).updateUserExp(userId, expPoints);
     }
 
     @Test
-    void updateUserExp_noEffectOnInvalidUserId() {
+    void modifyUserExp_noEffectOnInvalidUserId() {
         long invalidUserId = -1L;
         long expPoints = 10L;
 
         when(userDao.updateUserExp(invalidUserId, expPoints)).thenReturn(0);
 
-        Exception exception = assertThrows(Exception.class, () -> userService.updateUserExp(invalidUserId, expPoints));
+        Exception exception = assertThrows(Exception.class, () -> userService.modifyUserExp(invalidUserId, expPoints));
         verify(userDao, times(1)).updateUserExp(invalidUserId, expPoints);
     }
 
     @Test
-    void updateUserExp_zeroExperiencePoints() {
+    void modifyUserExp_zeroExperiencePoints() {
         long userId = 1L;
         long expPoints = 0;
 
@@ -66,7 +66,7 @@ class UserServiceImplTest {
         when(userDao.updateUserExp(userId, expPoints)).thenReturn(1);
 
         // When & Then
-        assertDoesNotThrow(() -> userService.updateUserExp(userId, expPoints));
+        assertDoesNotThrow(() -> userService.modifyUserExp(userId, expPoints));
         verify(userDao, times(1)).updateUserExp(userId, expPoints);
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/api/game")
 public class GameController {
@@ -23,8 +25,12 @@ public class GameController {
         try {
             gameService.createGame(game);
             return ResponseEntity.ok("게임이 성공적으로 추가되었습니다.");
+        } catch (IllegalArgumentException e) {  // 유효하지 않은 입력 값일 때 발생
+            return new ResponseEntity<>("게임 생성 실패: 유효하지 않은 입력입니다. " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (UnsupportedOperationException e) {  // 지원되지 않는 작업일 때 발생
+            return new ResponseEntity<>("게임 생성 실패: 지원되지 않는 작업입니다. " + e.getMessage(), HttpStatus.NOT_IMPLEMENTED);
         } catch (Exception e) {
-            return new ResponseEntity<>("게임 추가 실패: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("알 수 없는 오류로 인해 게임 생성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -37,8 +43,12 @@ public class GameController {
             } else {
                 return ResponseEntity.ok("성취하지 않은 상태이므로 경험치가 반영되지 않았습니다.");
             }
+        } catch (NoSuchElementException e) {  // 게임을 찾을 수 없을 때 발생
+            return new ResponseEntity<>("경험치 반영 실패: 게임을 찾을 수 없습니다. " + e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalStateException e) {  // 상태가 적절하지 않을 때 발생
+            return new ResponseEntity<>("경험치 반영 실패: 상태가 적절하지 않습니다. " + e.getMessage(), HttpStatus.CONFLICT);
         } catch (Exception e) {
-            return new ResponseEntity<>("경험치 반영 실패: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("알 수 없는 오류로 인해 경험치 반영에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
