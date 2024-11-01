@@ -1,21 +1,29 @@
 package com.him.fpjt.him_backend.exercise.service;
 
 import com.him.fpjt.him_backend.exercise.dao.GameDao;
-import com.him.fpjt.him_backend.exercise.domain.Game;
-import com.him.fpjt.him_backend.exercise.domain.ExerciseType;
 import com.him.fpjt.him_backend.exercise.domain.DifficultyLevel;
+import com.him.fpjt.him_backend.exercise.domain.ExerciseType;
+import com.him.fpjt.him_backend.exercise.domain.Game;
+import com.him.fpjt.him_backend.user.dao.UserDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class GameServiceImplTest {
 
     @Mock
     private GameDao gameDao;
+
+    @Mock
+    private UserDao userDao;
 
     @InjectMocks
     private GameServiceImpl gameService;
@@ -27,57 +35,79 @@ class GameServiceImplTest {
 
     @Test
     void createGame_success() {
-        // Given
-        Game game = new Game(ExerciseType.SQUAT, DifficultyLevel.EASY, false, 1);
+        Game game = new Game(1L, LocalDate.now(), ExerciseType.SQUAT, DifficultyLevel.EASY, false, 1L);
         when(gameDao.insertGame(game)).thenReturn(1);
 
-        // When
-        boolean result = gameService.createGame(game);
-
-        // Then
-        assertTrue(result);
+        assertDoesNotThrow(() -> gameService.createGame(game));
         verify(gameDao, times(1)).insertGame(game);
     }
 
     @Test
     void createGame_failure() {
-        // Given
-        Game game = new Game(ExerciseType.PUSHUP, DifficultyLevel.MEDIUM, false, 2);
+        Game game = new Game(1L, LocalDate.now(), ExerciseType.SQUAT, DifficultyLevel.EASY, false, 1L);
         when(gameDao.insertGame(game)).thenReturn(0);
 
-        // When
-        boolean result = gameService.createGame(game);
-
-        // Then
-        assertFalse(result);
+        Exception exception = assertThrows(Exception.class, () -> gameService.createGame(game));
         verify(gameDao, times(1)).insertGame(game);
     }
 
     @Test
-    void modifyGame_success() {
-        // Given
-        int gameId = 1;
-        when(gameDao.updateGame(gameId)).thenReturn(1);
+    void applyUserExp_noSimilarAchievement_andExpUpdateSuccess() {
+        long gameId = 1L;
+        long userId = 1L;
+        Game game = new Game(gameId, LocalDate.now(), ExerciseType.SQUAT, DifficultyLevel.HARD, false, userId);
 
-        // When
-        boolean result = gameService.modifyGame(gameId);
+        when(gameDao.findGameById(gameId)).thenReturn(game);
+        when(gameDao.existsAchievedGame(any(LocalDate.class), eq("SQUAT"), eq("HARD"), eq(userId))).thenReturn(false);
+        when(userDao.updateUserExp(eq(userId), anyLong())).thenReturn(1);
+        when(gameDao.updateGameAchievement(gameId)).thenReturn(1);
 
-        // Then
-        assertTrue(result);
-        verify(gameDao, times(1)).updateGame(gameId);
+        assertDoesNotThrow(() -> gameService.applyUserExp(gameId));
+        verify(userDao, times(1)).updateUserExp(eq(userId), anyLong());
+        verify(gameDao, times(1)).updateGameAchievement(gameId);
     }
 
     @Test
-    void modifyGame_failure() {
-        // Given
-        int gameId = 2;
-        when(gameDao.updateGame(gameId)).thenReturn(0);
+    void applyUserExp_noSimilarAchievement_andExpUpdateFails() {
+        long gameId = 1L;
+        long userId = 1L;
+        Game game = new Game(gameId, LocalDate.now(), ExerciseType.SQUAT, DifficultyLevel.HARD, false, userId);
 
-        // When
-        boolean result = gameService.modifyGame(gameId);
+        when(gameDao.findGameById(gameId)).thenReturn(game);
+        when(gameDao.existsAchievedGame(any(LocalDate.class), eq("SQUAT"), eq("HARD"), eq(userId))).thenReturn(false);
+        when(userDao.updateUserExp(eq(userId), anyLong())).thenReturn(0);
 
-        // Then
-        assertFalse(result);
-        verify(gameDao, times(1)).updateGame(gameId);
+        // 검증: 경험치 업데이트가 실패하여 예외가 발생하는지 확인
+        Exception exception = assertThrows(Exception.class, () -> gameService.applyUserExp(gameId));
+
+        // verify - updateUserExp는 호출되었지만, updateGameAchievement는 호출되지 않음
+        verify(userDao, times(1)).updateUserExp(eq(userId), anyLong());
+        verify(gameDao, never()).updateGameAchievement(gameId);
     }
+
+
+    @Test
+    void applyUserExp_withSimilarAchievement() {
+        long gameId = 1L;
+        long userId = 1L;
+        Game game = new Game(gameId, LocalDate.now(), ExerciseType.SQUAT, DifficultyLevel.HARD, false, userId);
+
+        when(gameDao.findGameById(gameId)).thenReturn(game);
+        when(gameDao.existsAchievedGame(any(LocalDate.class), eq("SQUAT"), eq("HARD"), eq(userId))).thenReturn(true);
+        when(gameDao.updateGameAchievement(gameId)).thenReturn(1);
+
+        assertDoesNotThrow(() -> gameService.applyUserExp(gameId));
+        verify(userDao, never()).updateUserExp(eq(userId), anyLong());
+        verify(gameDao, times(1)).updateGameAchievement(gameId);
+    }
+
+    @Test
+    void applyUserExp_gameNotFound() {
+        long gameId = 1L;
+        when(gameDao.findGameById(gameId)).thenReturn(null);
+
+        Exception exception = assertThrows(Exception.class, () -> gameService.applyUserExp(gameId));
+        verify(gameDao, never()).updateGameAchievement(gameId);
+    }
+
 }
