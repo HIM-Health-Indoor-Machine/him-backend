@@ -4,16 +4,33 @@
 
 <mapper namespace="com.him.fpjt.him_backend.exercise.dao.GameDao">
 
-    <!-- 게임 정보 삽입 -->
+    <!-- 새로운 게임을 삽입하는 SQL 구문 -->
     <insert id="insertGame" parameterType="Game">
-        INSERT INTO game
-        VALUES (#{date}, #{type}, #{difficulty_level}, false, #{userId})
+        INSERT INTO game (date, type, difficulty_level, is_achieved, user_id)
+        VALUES (#{date}, #{type}, #{difficultyLevel}, false, #{userId})
     </insert>
 
-    <!-- 성공 시, 게임 정보 수정 -->
-    <update id="updateGame" parameterType="int">
+    <!-- 특정 게임 ID로 게임 정보 조회 -->
+    <select id="findGameById" parameterType="long" resultType="Game">
+        SELECT * FROM game WHERE id = #{gameId}
+    </select>
+
+    <!-- 동일 날짜, 동일 유형, 동일 난이도에서 성공 처리된 게임이 있는지 확인 -->
+    <select id="existsAchievedGame" parameterType="map" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM game
+            WHERE DATE(date) = #{date}
+            AND type = #{type}
+            AND difficulty_level = #{difficultyLevel}
+            AND user_id = #{userId}
+            AND is_achieved = true
+        )
+    </select>
+
+    <!-- 특정 게임 ID로 성공 여부를 수정하는 SQL 구문 -->
+    <update id="updateGameAchievement" parameterType="long">
         UPDATE game
-        SET is_achieved=true
-        WHERE id=#{id}
+        SET is_achieved = true
+        WHERE id = #{id}
     </update>
 </mapper>
