@@ -11,4 +11,5 @@ public interface GameService {
     public boolean modifyGame(int id);
     void createGame(Game game) throws Exception;
 
+    void applyUserExp(long gameId) throws Exception;
 }
