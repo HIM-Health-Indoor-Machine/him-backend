@@ -1,10 +1,12 @@
 package com.him.fpjt.him_backend.user.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
 @Getter
 @ToString
+@AllArgsConstructor
 public class User {
     private long id;
     private String nickname;
