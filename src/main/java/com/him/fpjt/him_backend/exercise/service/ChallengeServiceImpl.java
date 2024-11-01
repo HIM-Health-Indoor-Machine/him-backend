@@ -43,4 +43,9 @@ public class ChallengeServiceImpl implements ChallengeService {
         log.info("delete todaychallenge by challengeId");
         return challengeDao.deleteChallenge(id) > 0 ? true : false;
     }
+
+    @Override
+    public boolean existsChallengeById(long id) {
+        return challengeDao.existsChallengeById(id);
+    }
 }
