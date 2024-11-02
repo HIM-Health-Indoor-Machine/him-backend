@@ -12,5 +12,6 @@ public interface ChallengeDao {
     public int deleteChallenge(long id);
     public int deleteTodayChallengeByChallengeId(long id);
     public boolean existsChallengeById(long id);
+    public int updateChallengeAchieveCnt(long id);
     public List<Challenge> findChallengesWithoutTodayRecord(LocalDate yesterday);
 }

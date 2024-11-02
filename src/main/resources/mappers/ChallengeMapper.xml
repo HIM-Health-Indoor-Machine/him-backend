@@ -28,6 +28,9 @@
         SELECT 1 FROM challenge WHERE id = #{id}
     )
   </select>
+  <update id="updateChallengeAchieveCnt" parameterType="long">
+    UPDATE challenge SET achieve_cnt = achieve_cnt + 1 WHERE id = #{id}
+  </update>
   <select id="findChallengesWithoutTodayRecord" parameterType="java.time.LocalDate" resultType="Challenge">
     SELECT *
     FROM challenge c
