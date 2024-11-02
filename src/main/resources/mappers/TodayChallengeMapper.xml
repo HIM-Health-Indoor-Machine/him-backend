@@ -19,4 +19,12 @@
   <delete id="deleteTodayChallengeByChallengeId" parameterType="long">
     DELETE FROM today_challenge WHERE challenge_id = #{id}
   </delete>
+  <select id="findUnachievedChallenges" parameterType="java.time.LocalDate" resultType="TodayChallenge">
+    SELECT *
+    FROM today_challenge tc
+           JOIN challenge c ON tc.challenge_id = c.id
+    WHERE tc.date = #{yesterday}
+      AND c.status = 'ONGOING'
+      AND tc.cnt &lt; c.goal_cnt
+  </select>
 </mapper>
