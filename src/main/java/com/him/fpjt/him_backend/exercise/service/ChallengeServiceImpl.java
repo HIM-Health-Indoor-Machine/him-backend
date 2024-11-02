@@ -51,6 +51,11 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Override
+    public boolean modifyChallengeAchieveCnt(long id) {
+        return challengeDao.updateChallengeAchieveCnt(id) > 0;
+    }
+
+    @Override
     public List<Challenge> findChallengesWithoutTodayRecord(LocalDate yesterday) {
         return challengeDao.findChallengesWithoutTodayRecord(yesterday);
     }
