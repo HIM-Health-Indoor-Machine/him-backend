@@ -16,6 +16,9 @@
   <select id="selectTodayChallengeById" parameterType="long" resultType="TodayChallenge">
     SELECT * FROM today_challenge WHERE id = #{id}
   </select>
+  <update id="updateTodayChallenge" parameterType="TodayChallenge">
+    UPDATE today_challenge SET cnt = #{cnt} WHERE id = #{id}
+  </update>
   <delete id="deleteTodayChallengeByChallengeId" parameterType="long">
     DELETE FROM today_challenge WHERE challenge_id = #{id}
   </delete>
