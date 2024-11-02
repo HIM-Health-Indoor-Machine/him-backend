@@ -19,6 +19,13 @@
   <delete id="deleteTodayChallengeByChallengeId" parameterType="long">
     DELETE FROM today_challenge WHERE challenge_id = #{id}
   </delete>
+  <select id="checkAchievementStreak" parameterType="map" resultType="boolean">
+    SELECT COUNT(*) = #{days}
+    FROM today_challenge
+    WHERE challenge_id = #{challengeId}
+      AND date >= DATE_SUB(#{date}, INTERVAL #{days} DAY)
+      AND cnt >= (SELECT goal_cnt FROM challenge WHERE id = #{challengeId})
+  </select>
   <select id="findUnachievedChallenges" parameterType="java.time.LocalDate" resultType="TodayChallenge">
     SELECT *
     FROM today_challenge tc

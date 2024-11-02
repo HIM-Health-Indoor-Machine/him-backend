@@ -9,5 +9,6 @@ public interface TodayChallengeDao {
     public boolean existsTodayChallengeByChallengeIdAndDate(long challengeId, LocalDate date);
     public TodayChallenge selectTodayChallengeById(long id);
     public long updateTodayChallenge(TodayChallenge todayChallenge);
+    public boolean checkAchievementStreak(long challengeId, LocalDate date, int days);
     public List<TodayChallenge> findUnachievedChallenges(LocalDate yesterday);
 }
