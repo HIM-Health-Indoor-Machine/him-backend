@@ -3,6 +3,7 @@ package com.him.fpjt.him_backend.exercise.service;
 import com.him.fpjt.him_backend.exercise.dao.ChallengeDao;
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,5 +48,10 @@ public class ChallengeServiceImpl implements ChallengeService {
     @Override
     public boolean existsChallengeById(long id) {
         return challengeDao.existsChallengeById(id);
+    }
+
+    @Override
+    public List<Challenge> findChallengesWithoutTodayRecord(LocalDate yesterday) {
+        return challengeDao.findChallengesWithoutTodayRecord(yesterday);
     }
 }
