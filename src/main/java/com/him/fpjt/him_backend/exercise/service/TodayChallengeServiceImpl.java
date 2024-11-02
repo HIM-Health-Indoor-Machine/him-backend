@@ -4,15 +4,17 @@ import com.him.fpjt.him_backend.common.constants.ExpPoints;
 import com.him.fpjt.him_backend.exercise.dao.TodayChallengeDao;
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
+import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
 import com.him.fpjt.him_backend.user.service.UserService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+@Slf4j
 @Service
 public class TodayChallengeServiceImpl implements TodayChallengeService {
     private TodayChallengeDao todayChallengeDao;
@@ -47,9 +49,51 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
                 .orElseThrow(() -> new NoSuchElementException("해당 ID의 오늘의 챌린지가 존재하지 않습니다."));
     }
 
+    @Transactional
+    @Override
+    public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto) {
+        log.info("오늘의 챌린지 변경 service");
+        TodayChallenge todayChallenge = getTodayChallengeById(newTodayChallengeDto.getId());
+        todayChallenge.setCnt(newTodayChallengeDto.getCnt());
+        boolean isUpdated = todayChallengeDao.updateTodayChallenge(todayChallenge) > 0;
+        Challenge challenge = challengeService.getChallengeDetail(todayChallenge.getChallengeId());
+
+        if (isUpdated && isGoalAchieved(todayChallenge)) {
+            log.info("todayChallenge update successful, and goal achieved");
+            challengeService.modifyChallengeAchieveCnt(todayChallenge.getChallengeId());
+
+            addAchievementExp(todayChallenge, challenge);
+        }
+        return isUpdated;
+    }
+
+    private void addAchievementExp(TodayChallenge todayChallenge, Challenge challenge) {
+        int streakExp = calculateAchievementStreakExp(todayChallenge.getChallengeId(), todayChallenge.getDate());
+        if (streakExp > 0) {
+            userService.modifyUserExp(challenge.getUserId(), streakExp);
+        } else {
+            userService.modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
+        }
+    }
+
+    private boolean isGoalAchieved(TodayChallenge todayChallenge) {
+        long goalCnt = challengeService.getChallengeDetail(todayChallenge.getChallengeId()).getGoalCnt();
+        return todayChallenge.getCnt() >= goalCnt;
+    }
+
     private boolean isTodayChallengeExists(long challengeId, LocalDate date) {
         return todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(challengeId, date);
     }
+
+    private int calculateAchievementStreakExp(long challengeId, LocalDate currentDate) {
+        boolean isSevenDayStreak = todayChallengeDao.checkAchievementStreak(challengeId, currentDate, ExpPoints.SEVEN_DAY);
+        boolean isThirtyDayStreak = todayChallengeDao.checkAchievementStreak(challengeId, currentDate, ExpPoints.THIRTY_DAY);
+
+        if (isThirtyDayStreak) return ExpPoints.THIRTY_DAY_STREAK_EXP;
+        if (isSevenDayStreak) return ExpPoints.SEVEN_DAY_STREAK_EXP;
+        return 0;
+    }
+
     @Scheduled(cron = "0 0 1 * * ?")
     @Transactional
     @Override
