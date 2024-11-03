@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,6 +46,16 @@ public class TodayChallengeController {
             return ResponseEntity.ok().body(todayChallenge);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
+        }
+    }
+    @PutMapping
+    public ResponseEntity<Object> modifyTodayChallenge(
+                                                        @RequestBody TodayChallengeDto todayChallengeDto) {
+        try {
+            todayChallengeService.modifyTodayChallenge(todayChallengeDto);
+            return ResponseEntity.ok("오늘의 챌린지가 성공적으로 수정되었습니다.");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 오늘의 챌린지를 찾을 수 없습니다.");
         }
     }
 }

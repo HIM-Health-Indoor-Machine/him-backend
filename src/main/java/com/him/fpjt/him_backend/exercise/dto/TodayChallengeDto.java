@@ -13,7 +13,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TodayChallengeDto {
+    private long id;
     private long cnt = 0;
     private long challengeId;
     private LocalDate date = LocalDate.now();
+
+    public TodayChallengeDto(long cnt, long challengeId, LocalDate date) {
+        this.cnt = cnt;
+        this.challengeId = challengeId;
+        this.date = date;
+    }
 }

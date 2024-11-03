@@ -1,6 +1,7 @@
 package com.him.fpjt.him_backend.common.constants;
 
 public class ExpPoints {
+    public static final int DAILY_PENALTY_EXP = -3;
     public static final int DAILY_ACHIVEMENT_EXP = 5;
     public static final int SEVEN_DAY_STREAK_EXP = 10;
     public static final int THIRTY_DAY_STREAK_EXP = 100;
