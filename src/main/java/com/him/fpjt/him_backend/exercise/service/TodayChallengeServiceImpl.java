@@ -52,7 +52,6 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
     @Transactional
     @Override
     public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto) {
-        log.info("오늘의 챌린지 변경 service");
         TodayChallenge todayChallenge = getTodayChallengeById(newTodayChallengeDto.getId());
         todayChallenge.setCnt(newTodayChallengeDto.getCnt());
         boolean isUpdated = todayChallengeDao.updateTodayChallenge(todayChallenge) > 0;
