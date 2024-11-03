@@ -70,9 +70,8 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         int streakExp = calculateAchievementStreakExp(todayChallenge.getChallengeId(), todayChallenge.getDate());
         if (streakExp > 0) {
             userService.modifyUserExp(challenge.getUserId(), streakExp);
-        } else {
-            userService.modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
         }
+        userService.modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
     }
 
     private boolean isGoalAchieved(TodayChallenge todayChallenge) {

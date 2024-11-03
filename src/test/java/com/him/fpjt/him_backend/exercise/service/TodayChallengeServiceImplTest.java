@@ -188,7 +188,7 @@ public class TodayChallengeServiceImplTest {
         assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
 
         verify(userService, times(1)).modifyUserExp(challenge.getUserId(), ExpPoints.THIRTY_DAY_STREAK_EXP);
-        verify(userService, never()).modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
+        verify(userService, times(1)).modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
         verify(userService, never()).modifyUserExp(challenge.getUserId(), ExpPoints.SEVEN_DAY_STREAK_EXP);
     }
     @Test
