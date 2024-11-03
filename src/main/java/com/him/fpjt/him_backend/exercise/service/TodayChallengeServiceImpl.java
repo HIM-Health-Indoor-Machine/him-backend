@@ -67,9 +67,9 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
     }
 
     private void addAchievementExp(TodayChallenge todayChallenge, Challenge challenge) {
-        int streakExp = calculateAchievementStreakExp(todayChallenge.getChallengeId(), todayChallenge.getDate());
-        if (streakExp > 0) {
-            userService.modifyUserExp(challenge.getUserId(), streakExp);
+        int bonusExp = calculateAchievementBonusExp(todayChallenge.getChallengeId(), todayChallenge.getDate());
+        if (bonusExp > 0) {
+            userService.modifyUserExp(challenge.getUserId(), bonusExp);
         }
         userService.modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
     }
@@ -83,9 +83,9 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         return todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(challengeId, date);
     }
 
-    private int calculateAchievementStreakExp(long challengeId, LocalDate currentDate) {
-        boolean isSevenDayStreak = todayChallengeDao.checkAchievementStreak(challengeId, currentDate, ExpPoints.SEVEN_DAY);
-        boolean isThirtyDayStreak = todayChallengeDao.checkAchievementStreak(challengeId, currentDate, ExpPoints.THIRTY_DAY);
+    private int calculateAchievementBonusExp(long challengeId, LocalDate currentDate) {
+        boolean isSevenDayStreak = todayChallengeDao.checkAchievementBonus(challengeId, currentDate, ExpPoints.SEVEN_DAY);
+        boolean isThirtyDayStreak = todayChallengeDao.checkAchievementBonus(challengeId, currentDate, ExpPoints.THIRTY_DAY);
 
         if (isThirtyDayStreak) return ExpPoints.THIRTY_DAY_STREAK_EXP;
         if (isSevenDayStreak) return ExpPoints.SEVEN_DAY_STREAK_EXP;

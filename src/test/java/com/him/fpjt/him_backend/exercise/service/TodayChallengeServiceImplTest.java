@@ -140,8 +140,8 @@ public class TodayChallengeServiceImplTest {
 
         when(todayChallengeDao.updateTodayChallenge(any(TodayChallenge.class))).thenReturn(1L);
         when(challengeService.getChallengeDetail(todayChallengeDto.getChallengeId())).thenReturn(challenge);
-        when(todayChallengeDao.checkAchievementStreak(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(true);
-        when(todayChallengeDao.checkAchievementStreak(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(false);
+        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(true);
+        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(false);
 
         assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
 
@@ -160,8 +160,8 @@ public class TodayChallengeServiceImplTest {
 
         when(todayChallengeDao.updateTodayChallenge(any(TodayChallenge.class))).thenReturn(1L);
         when(challengeService.getChallengeDetail(todayChallengeDto.getChallengeId())).thenReturn(challenge);
-        when(todayChallengeDao.checkAchievementStreak(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(false);
-        when(todayChallengeDao.checkAchievementStreak(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(false);
+        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(false);
+        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(false);
 
         assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
 
@@ -182,8 +182,8 @@ public class TodayChallengeServiceImplTest {
 
         when(todayChallengeDao.updateTodayChallenge(any(TodayChallenge.class))).thenReturn(1L);
         when(challengeService.getChallengeDetail(todayChallengeDto.getChallengeId())).thenReturn(challenge);
-        when(todayChallengeDao.checkAchievementStreak(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(false);
-        when(todayChallengeDao.checkAchievementStreak(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(true);
+        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(false);
+        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(true);
 
         assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
 

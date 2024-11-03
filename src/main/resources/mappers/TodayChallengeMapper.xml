@@ -22,7 +22,7 @@
   <delete id="deleteTodayChallengeByChallengeId" parameterType="long">
     DELETE FROM today_challenge WHERE challenge_id = #{id}
   </delete>
-  <select id="checkAchievementStreak" parameterType="map" resultType="boolean">
+  <select id="checkAchievementBonus" parameterType="map" resultType="boolean">
     SELECT COUNT(*) = #{days}
     FROM today_challenge
     WHERE challenge_id = #{challengeId}
