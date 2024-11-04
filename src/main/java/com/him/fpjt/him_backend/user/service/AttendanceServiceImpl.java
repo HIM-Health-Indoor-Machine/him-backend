@@ -36,4 +36,13 @@ public class AttendanceServiceImpl implements AttendenceService{
     public void addAttendanceExp(long userId) throws Exception {
         userService.modifyUserExp(userId, ExpPoints.DAILY_ATTENDANCE_EXP);
     }
+
+    @Override
+    @Transactional
+    public void setAttendanceStatus(long userId, LocalDate attendDt) {
+        int updatedRow = attendanceDao.updateAttendanceStatus(userId, attendDt);
+        if (updatedRow == 0) {
+            throw new NoSuchElementException("존재히지 않는 회원입니다.");
+        }
+    }
 }
