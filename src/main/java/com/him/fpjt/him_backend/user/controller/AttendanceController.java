@@ -34,4 +34,17 @@ public class AttendanceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @GetMapping("{userId}")
+    public ResponseEntity<?> getMonthlyAttendance(@PathVariable("userId") long userId,
+                                                @RequestParam("year") int year,
+                                                @RequestParam("month") int month) {
+        try {
+            List<Attendance> attendances = attendenceService.getMonthlyAttendance(userId, year, month);
+            return ResponseEntity.ok().body(attendances);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

@@ -45,4 +45,15 @@ public class AttendanceServiceImpl implements AttendenceService{
             throw new NoSuchElementException("존재히지 않는 회원입니다.");
         }
     }
+
+    @Override
+    public List<Attendance> getMonthlyAttendance(long userId, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        List<Attendance> attendances = attendanceDao.selectAttendanceByUserIdAndDateRange(userId,
+                yearMonth.atDay(1), yearMonth.atEndOfMonth());
+        if (attendances == null || attendances.isEmpty()) {
+            throw new NoSuchElementException("해당 회원의 출석 기록이 존재하지 않습니다.");
+        }
+        return attendances;
+    }
 }

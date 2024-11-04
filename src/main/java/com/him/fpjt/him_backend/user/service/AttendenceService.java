@@ -8,4 +8,5 @@ public interface AttendenceService {
     void generateDailyAttendance();
     void addAttendanceExp(long userId) throws Exception;
     void setAttendanceStatus(long userId, LocalDate attendDt);
+    List<Attendance> getMonthlyAttendance(long userId, int year, int month);
 }
