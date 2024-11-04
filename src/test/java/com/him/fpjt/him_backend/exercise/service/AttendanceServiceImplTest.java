@@ -86,4 +86,39 @@ public class AttendanceServiceImplTest {
         );
     }
 
+    @Test
+    @DisplayName("해당 월의 출석 리스트를 조회한다.")
+    void getMonthlyAttendance() {
+        long userId = 1L;
+        int year = 2024;
+        int month = 10;
+        YearMonth yearMonth = YearMonth.of(year, month);
+        List<Attendance> expectedAttendances = Arrays.asList(
+                new Attendance(1L, yearMonth.atDay(1), true, userId),
+                new Attendance(2L, yearMonth.atDay(2), false, userId)
+        );
+
+        when(attendanceDao.selectAttendanceByUserIdAndDateRange(userId, yearMonth.atDay(1), yearMonth.atEndOfMonth()))
+                .thenReturn(expectedAttendances);
+
+        List<Attendance> actualAttendances = attendanceService.getMonthlyAttendance(userId, year, month);
+
+        assertEquals(expectedAttendances, actualAttendances);
+    }
+
+    @Test
+    @DisplayName("출석 기록이 없는 경우, 예외가 발생한다.")
+    void getMonthlyAttendance_NoAttendanceRecords() {
+        long userId = 1L;
+        int year = 2024;
+        int month = 10;
+        YearMonth yearMonth = YearMonth.of(year, month);
+
+        when(attendanceDao.selectAttendanceByUserIdAndDateRange(userId, yearMonth.atDay(1), yearMonth.atEndOfMonth()))
+                .thenReturn(Collections.emptyList());
+
+        assertThrows(NoSuchElementException.class, () ->
+                attendanceService.getMonthlyAttendance(userId, year, month)
+        );
+    }
 }
