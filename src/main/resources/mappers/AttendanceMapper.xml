@@ -6,4 +6,9 @@
     INSERT INTO attendance (attend_dt, is_attended, user_id)
     VALUES (#{attendDt}, #{isAttended}, #{userId})
   </insert>
+  <update id="updateAttendanceStatus" parameterType="map" >
+    UPDATE attendance
+    SET is_attended = true
+    WHERE user_id = #{userId} AND attend_dt = #{attendDt}
+  </update>
 </mapper>
