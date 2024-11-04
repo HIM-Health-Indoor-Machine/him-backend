@@ -9,4 +9,7 @@
         SET exp = exp + #{expPoints}
         WHERE id = #{userId}
     </update>
+    <select id="selectAllUserIds" resultType="long">
+        SELECT id FROM user
+    </select>
 </mapper>
