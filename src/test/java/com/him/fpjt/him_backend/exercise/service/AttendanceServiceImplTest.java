@@ -51,4 +51,14 @@ public class AttendanceServiceImplTest {
             verify(attendanceDao, times(3)).insertAttendance(any(Attendance.class));
         }
     }
+
+    @Test
+    @DisplayName("사용자의 출석 경험치 1EXP를 추가한다.")
+    void addAttendanceExp() throws Exception {
+        long userId = 1L;
+
+        attendanceService.addAttendanceExp(1L);
+
+        verify(userService, times(1)).modifyUserExp(userId, ExpPoints.DAILY_ATTENDANCE_EXP);
+    }
 }
