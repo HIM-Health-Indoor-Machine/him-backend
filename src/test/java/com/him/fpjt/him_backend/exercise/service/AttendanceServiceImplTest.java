@@ -61,4 +61,29 @@ public class AttendanceServiceImplTest {
 
         verify(userService, times(1)).modifyUserExp(userId, ExpPoints.DAILY_ATTENDANCE_EXP);
     }
+
+    @Test
+    @DisplayName("오늘의 출석 칼럼의 출석 상태를 true로 수정한다.")
+    void setAttendanceStatus() {
+        long userId = 1L;
+        LocalDate attendDate = LocalDate.now();
+        when(attendanceDao.updateAttendanceStatus(userId, attendDate)).thenReturn(1);
+
+        attendanceService.setAttendanceStatus(userId, attendDate);
+
+        verify(attendanceDao, times(1)).updateAttendanceStatus(userId, attendDate);
+    }
+
+    @Test
+    @DisplayName("출석 상태 업데이트 실패 시, 예외가 발생한다.")
+    void setAttendanceStatus_UserNotFound() {
+        long userId = 1L;
+        LocalDate attendDate = LocalDate.now();
+        when(attendanceDao.updateAttendanceStatus(userId, attendDate)).thenReturn(0);
+
+        assertThrows(NoSuchElementException.class, () ->
+                attendanceService.setAttendanceStatus(userId, attendDate)
+        );
+    }
+
 }
