@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -113,7 +113,7 @@ public class TodayChallengeServiceImplTest {
 
     @Test
     @DisplayName("오늘의 챌린지를 달성할 경우, 경험치 5EXP를 추가한다.")
-    void modifyTodayChallenge_getDailyExp() {
+    void modifyTodayChallenge_getDailyExp() throws Exception {
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0,1L);
         TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, 1L, LocalDate.now());
         TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, 1L, LocalDate.now());
@@ -121,7 +121,7 @@ public class TodayChallengeServiceImplTest {
         when(todayChallengeDao.selectTodayChallengeById(todayChallengeDto.getId())).thenReturn(todayChallenge);
         when(todayChallengeDao.updateTodayChallenge(todayChallenge)).thenReturn(1L);
         when(challengeService.getChallengeDetail(todayChallenge.getChallengeId())).thenReturn(challenge);
-        when(userService.modifyUserExp(anyLong(), anyInt())).thenReturn(true);
+        doNothing().when(userService).modifyUserExp(anyLong(), anyInt());
 
         assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
 
@@ -129,7 +129,7 @@ public class TodayChallengeServiceImplTest {
     }
     @Test
     @DisplayName("7일 내내 오늘의 챌린지 목표 달성 시, 경험치 10EXP를 추가한다.")
-    void modifyTodayChallenge_get7DaysExp() {
+    void modifyTodayChallenge_get7DaysExp() throws Exception {
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10, 0, 1L);
         for (int i = 0; i < 7; i++) {
@@ -149,7 +149,7 @@ public class TodayChallengeServiceImplTest {
     }
     @Test
     @DisplayName("8일 내내 오늘의 챌린지 목표 달성 시, 경험치 5EXP를 추가한다.")
-    void modifyTodayChallenge_getDailyExp_when8daysStreak() {
+    void modifyTodayChallenge_getDailyExp_when8daysStreak() throws Exception {
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
         for (int i = 1; i <= 8; i++) {
@@ -171,7 +171,7 @@ public class TodayChallengeServiceImplTest {
     }
     @Test
     @DisplayName("30일 내내 오늘의 챌린지 목표 달성 시, 경험치 100EXP를 추가한다.")
-    void modifyTodayChallenge_get30DaysExp() {
+    void modifyTodayChallenge_get30DaysExp() throws Exception {
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
         for (int i = 0; i < 30; i++) {
@@ -193,14 +193,14 @@ public class TodayChallengeServiceImplTest {
     }
     @Test
     @DisplayName("오늘의 챌린지 목표를 달성하지 못했을 시, 경험치 3EXP를 차감한다.")
-    void modifyUnachievementTodayChallenge() {
+    void modifyUnachievementTodayChallenge() throws Exception {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now(), LocalDate.now(), 10L, 0,1L);
         TodayChallenge unachievedTodayChallenge = new TodayChallenge(1L, 5L, 1L, yesterday);
 
         when(todayChallengeDao.findUnachievedChallenges(yesterday)).thenReturn(List.of(unachievedTodayChallenge));
         when(challengeService.getChallengeDetail(unachievedTodayChallenge.getChallengeId())).thenReturn(challenge);
-        when(userService.modifyUserExp(anyLong(), eq(ExpPoints.DAILY_PENALTY_EXP))).thenReturn(true);
+        doNothing().when(userService).modifyUserExp(anyLong(), anyInt());
 
         todayChallengeService.modifyUnachievementTodayChallenge();
         verify(userService).modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_PENALTY_EXP);

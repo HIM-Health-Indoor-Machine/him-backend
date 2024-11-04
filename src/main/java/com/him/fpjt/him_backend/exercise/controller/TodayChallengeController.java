@@ -56,6 +56,8 @@ public class TodayChallengeController {
             return ResponseEntity.ok("오늘의 챌린지가 성공적으로 수정되었습니다.");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 오늘의 챌린지를 찾을 수 없습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }
