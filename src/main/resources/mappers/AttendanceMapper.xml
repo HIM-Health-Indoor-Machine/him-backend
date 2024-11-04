@@ -11,4 +11,9 @@
     SET is_attended = true
     WHERE user_id = #{userId} AND attend_dt = #{attendDt}
   </update>
+  <select id="selectAttendanceByUserIdAndDateRange" parameterType="map" resultType="Attendance">
+    SELECT * FROM attendance
+    WHERE user_id = #{userId}
+      AND attend_dt BETWEEN #{startOfMonth} AND #{endOfMonth}
+  </select>
 </mapper>
