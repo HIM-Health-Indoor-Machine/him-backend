@@ -30,4 +30,10 @@ public class AttendanceServiceImpl implements AttendenceService{
             attendanceDao.insertAttendance(new Attendance(userId));
         }
     }
+
+    @Override
+    @Transactional
+    public void addAttendanceExp(long userId) throws Exception {
+        userService.modifyUserExp(userId, ExpPoints.DAILY_ATTENDANCE_EXP);
+    }
 }

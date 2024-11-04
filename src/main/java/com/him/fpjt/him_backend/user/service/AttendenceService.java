@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface AttendenceService {
     void generateDailyAttendance();
+    void addAttendanceExp(long userId) throws Exception;
 }
