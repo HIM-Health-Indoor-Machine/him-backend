@@ -28,20 +28,17 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         this.userService = userService;
     }
 
+    @Scheduled(cron = "0 1 0 * * ?")
     @Transactional
     @Override
-    public long createTodayChallenge(TodayChallenge todayChallenge) {
-        if(!challengeService.existsChallengeById(todayChallenge.getChallengeId())) {
-            throw new IllegalArgumentException("존재하지 않는 챌린지 id 입니다.");
+    public void createTodayChallenge() {
+        List<Long> allChallengeId = challengeService.getAllChallengeId();
+        for (Long challengeId : allChallengeId) {
+            long todayChallengeId = todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, challengeId, LocalDate.now()));
+            if (todayChallengeId <= 0) {
+                throw new RuntimeException("챌린지 생성에 실패했습니다.");
+            }
         }
-        if (isTodayChallengeExists(todayChallenge.getChallengeId(), todayChallenge.getDate())) {
-            throw new IllegalStateException("이미 동일한 챌린지가 존재합니다.");
-        }
-        long todayChallengeId = todayChallengeDao.insertTodayChallenge(todayChallenge);
-        if (todayChallengeId <= 0) {
-            throw new RuntimeException("챌린지 생성에 실패했습니다.");
-        }
-        return todayChallengeId;
     }
     @Override
     public TodayChallenge getTodayChallengeById(long id) {

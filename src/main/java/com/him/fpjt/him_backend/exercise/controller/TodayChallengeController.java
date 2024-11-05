@@ -23,22 +23,6 @@ public class TodayChallengeController {
     public TodayChallengeController(TodayChallengeService todayChallengeService) {
         this.todayChallengeService = todayChallengeService;
     }
-
-    @PostMapping
-    public ResponseEntity<Object> createTodayChallenge(
-            @RequestBody TodayChallengeDto todayChallengeDto) {
-        TodayChallenge todayChallenge = new TodayChallenge(todayChallengeDto.getCnt(), todayChallengeDto.getChallengeId(), todayChallengeDto.getDate());
-        try {
-            long todayChallengeId = todayChallengeService.createTodayChallenge(todayChallenge);
-            return ResponseEntity.status(HttpStatus.CREATED).body(todayChallengeId);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
     @GetMapping("{todayChallengeId}")
     public ResponseEntity<Object> getTodayChallenge(@PathVariable("todayChallengeId") long id) {
         try {
