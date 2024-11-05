@@ -22,6 +22,7 @@ import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
 import com.him.fpjt.him_backend.user.service.UserService;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,48 +47,26 @@ public class TodayChallengeServiceImplTest {
     }
 
     @Test
-    @DisplayName("오늘의 챌린지 생성 성공 시 todayChalllengeId를 반환한다.")
+    @DisplayName("진행중인 챌린지들을 모두 조회하여, 오늘 날짜의 오늘의 챌린지를 생성한다.")
     public void createTodayChallenge_success() {
-        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
+        List<Long> allChallengeIds = Arrays.asList(1L, 2L, 3L);
+        when(challengeService.getAllChallengeId()).thenReturn(allChallengeIds);
+        when(todayChallengeDao.insertTodayChallenge(any(TodayChallenge.class))).thenReturn(1L);
 
-        when(challengeService.existsChallengeById(1L)).thenReturn(true);
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(false);
-        when(todayChallengeDao.insertTodayChallenge(todayChallenge)).thenReturn(1L);
+        todayChallengeService.createTodayChallenge();
 
-        long resultId = todayChallengeService.createTodayChallenge(todayChallenge);
-
-        assertEquals(1L, resultId);
-        verify(todayChallengeDao).insertTodayChallenge(todayChallenge);
-    }
-    @Test
-    @DisplayName("존재하지 않는 챌린지 id의 경우, 예외가 발생합니다.")
-    public void createTodayChallenge_notExistChallengeId() {
-        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
-        when(challengeService.existsChallengeById(1L)).thenReturn(false);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> todayChallengeService.createTodayChallenge(todayChallenge),
-                "존재하지 않는 챌린지 id 입니다."
-        );
-    }
-    @Test
-    @DisplayName("이미 오늘의 챌린지가 있는 경우, 예외가 발생한다.")
-    void createTodayChallenge_duplicate() {
-        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
-        when(challengeService.existsChallengeById(1L)).thenReturn(true);
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(true);
-
-        assertThrows(IllegalStateException.class, () -> todayChallengeService.createTodayChallenge(todayChallenge));
+        verify(challengeService, times(1)).getAllChallengeId();
+        verify(todayChallengeDao, times(allChallengeIds.size())).insertTodayChallenge(any(TodayChallenge.class));
     }
 
     @Test
     @DisplayName("오늘의 챌린지 생성 실패 시, 예외가 발생한다.")
     void createTodayChallenge_fail() {
-        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(false);
-        when(todayChallengeDao.insertTodayChallenge(todayChallenge)).thenReturn(0L);
+        List<Long> allChallengeIds = Arrays.asList(1L, 2L, 3L);
+        when(challengeService.getAllChallengeId()).thenReturn(allChallengeIds);
+        when(todayChallengeDao.insertTodayChallenge(any(TodayChallenge.class))).thenReturn(0L);
 
-        assertThrows(RuntimeException.class, () -> todayChallengeService.createTodayChallenge(todayChallenge));
+        assertThrows(RuntimeException.class, () -> todayChallengeService.createTodayChallenge());
     }
 
     @Test
