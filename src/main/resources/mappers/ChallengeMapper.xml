@@ -31,17 +31,6 @@
   <update id="updateChallengeAchieveCnt" parameterType="long">
     UPDATE challenge SET achieve_cnt = achieve_cnt + 1 WHERE id = #{id}
   </update>
-  <select id="findChallengesWithoutTodayRecord" parameterType="java.time.LocalDate" resultType="Challenge">
-    SELECT *
-    FROM challenge c
-    WHERE c.status = 'ONGOING'
-    AND NOT EXISTS(
-        SELECT 1
-        FROM today_challenge tc
-        WHERE tc.challenge_id = c.id
-          AND tc.date = #{yesterday}
-      )
-  </select>
   <select id="selectAllChallengeId" resultType="long">
     SELECT id FROM challenge WHERE status = 'ONGOING'
   </select>

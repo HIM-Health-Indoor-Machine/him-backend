@@ -99,11 +99,5 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         for (TodayChallenge unachievedTodayChallenge : unachievedTodayChallenges) {
             userService.modifyUserExp(challengeService.getChallengeDetail(unachievedTodayChallenge.getChallengeId()).getUserId(), ExpPoints.DAILY_PENALTY_EXP);
         }
-
-        List<Challenge> missingChallenges = challengeService.findChallengesWithoutTodayRecord(yesterday);
-
-        for (Challenge missingChallenge : missingChallenges) {
-            userService.modifyUserExp(missingChallenge.getUserId(), ExpPoints.DAILY_PENALTY_EXP);
-        }
     }
 }
