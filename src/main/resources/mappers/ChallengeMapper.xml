@@ -42,4 +42,7 @@
           AND tc.date = #{yesterday}
       )
   </select>
+  <select id="selectAllChallengeId" resultType="long">
+    SELECT id FROM challenge WHERE status = 'ONGOING'
+  </select>
 </mapper>
