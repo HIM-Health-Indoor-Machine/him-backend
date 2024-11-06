@@ -55,4 +55,14 @@ public class ChallengeServiceImpl implements ChallengeService {
     public List<Challenge> findChallengesWithoutTodayRecord(LocalDate yesterday) {
         return challengeDao.findChallengesWithoutTodayRecord(yesterday);
     }
+
+    @Override
+    @Scheduled(cron = "50 59 23 * * ?")
+    public void modifyChallengeStatus() {
+        LocalDate today = LocalDate.now();
+        if (challengeDao.existsChallengeByStartDate(today) || challengeDao.existsChallengeByEndDate(today)) {
+            int changedCount = challengeDao.updateChallengeStatus(today);
+            log.info("updated challenge count : {}", changedCount);
+        }
+    }
 }
