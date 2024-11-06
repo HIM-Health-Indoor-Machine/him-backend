@@ -62,4 +62,9 @@
           AND tc.date = #{yesterday}
       )
   </select>
+  <update id="updateChallenge" parameterType="Challenge">
+    UPDATE challenge
+    SET type = #{type}, start_dt = #{startDt}, end_dt = #{endDt}, goal_cnt = #{goalCnt}
+    WHERE id = #{id}
+  </update>
 </mapper>

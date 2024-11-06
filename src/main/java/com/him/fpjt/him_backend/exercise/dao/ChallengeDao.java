@@ -16,4 +16,5 @@ public interface ChallengeDao {
     public boolean existsChallengeByEndDate(LocalDate date);
     public int updateChallengeStatus(LocalDate today);
     public List<Challenge> findChallengesWithoutTodayRecord(LocalDate yesterday);
+    public int updateChallenge(Challenge challenge);
 }
