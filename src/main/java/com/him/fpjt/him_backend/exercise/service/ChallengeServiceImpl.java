@@ -4,10 +4,9 @@ import com.him.fpjt.him_backend.exercise.dao.ChallengeDao;
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 @Slf4j
@@ -26,10 +25,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Override
     public List<Challenge> getChallengeByStatusAndUserId(long userId, ChallengeStatus status) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("userId", userId);
-        params.put("status", ChallengeStatus.ONGOING.name());
-        return challengeDao.selectChallengesByStatusAndUserId(params);
+        return challengeDao.selectChallengesByStatusAndUserId(userId, status.name());
     }
 
     @Override
