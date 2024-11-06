@@ -41,6 +41,16 @@
              SELECT * FROM challenge WHERE end_dt = #{today}
              )
   </select>
+  <update id="updateChallengeStatus" parameterType="java.time.LocalDate">
+    UPDATE challenge
+    SET status =
+          CASE
+            WHEN end_dt = #{today} THEN 'DONE'
+            WHEN start_dt = #{today} THEN 'ONGOING'
+            ELSE status
+            END
+    WHERE start_dt = #{today} OR end_dt = #{today}
+  </update>
   <select id="findChallengesWithoutTodayRecord" parameterType="java.time.LocalDate" resultType="Challenge">
     SELECT *
     FROM challenge c
