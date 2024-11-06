@@ -70,12 +70,14 @@ public class ChallegeServiceImplTest {
     @Test
     @DisplayName("status와 userId에 따라 챌린지 목록을 조회한다.")
     void getChallengeByStatusAndUserId() {
-        when(challengeDao.selectChallengesByStatusAndUserId(anyMap())).thenReturn(List.of(mockChallenge));
+        long userId = 1L;
+        String status = ChallengeStatus.ONGOING.name();
+        when(challengeDao.selectChallengesByStatusAndUserId(userId, status)).thenReturn(List.of(mockChallenge));
 
-        List<Challenge> challenges = challengeService.getChallengeByStatusAndUserId(1L, ChallengeStatus.ONGOING);
+        List<Challenge> challenges = challengeService.getChallengeByStatusAndUserId(userId, ChallengeStatus.ONGOING);
 
         assertEquals(1, challenges.size());
-        verify(challengeDao, times(1)).selectChallengesByStatusAndUserId(anyMap());
+        verify(challengeDao, times(1)).selectChallengesByStatusAndUserId(userId, status);
     }
 
     @Test
