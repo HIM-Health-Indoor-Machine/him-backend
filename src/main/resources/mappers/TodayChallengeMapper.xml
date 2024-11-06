@@ -6,13 +6,6 @@
     INSERT INTO today_challenge (cnt, challenge_id, date)
     VALUES (#{cnt}, #{challengeId}, #{date})
   </insert>
-  <select id="existsTodayChallengeByChallengeIdAndDate" parameterType="map" resultType="boolean">
-      SELECT EXISTS (
-          SELECT 1 FROM today_challenge
-          WHERE date = #{date}
-          AND challenge_id = #{challengeId}
-      )
-  </select>
   <select id="selectTodayChallengeById" parameterType="long" resultType="TodayChallenge">
     SELECT * FROM today_challenge WHERE id = #{id}
   </select>

@@ -76,10 +76,6 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         return todayChallenge.getCnt() >= goalCnt;
     }
 
-    private boolean isTodayChallengeExists(long challengeId, LocalDate date) {
-        return todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(challengeId, date);
-    }
-
     private int calculateAchievementBonusExp(long challengeId, LocalDate currentDate) {
         boolean isSevenDayStreak = todayChallengeDao.checkAchievementBonus(challengeId, currentDate, ExpPoints.SEVEN_DAY);
         boolean isThirtyDayStreak = todayChallengeDao.checkAchievementBonus(challengeId, currentDate, ExpPoints.THIRTY_DAY);
