@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -104,5 +103,36 @@ public class ChallegeServiceImplTest {
         when(challengeDao.deleteTodayChallengeByChallengeId(1L)).thenReturn(1);
         when(challengeDao.deleteChallenge(1L)).thenReturn(0);
         assertFalse(challengeService.removeChallenge(1L));
+    }
+
+    @Test
+    @DisplayName("종료일이 오늘인 챌린지의 상태를 done으로 업데이트 한다.")
+    void modifyChallengeStatus_done() {
+        LocalDate today = LocalDate.now();
+        when(challengeDao.existsChallengeByStartDate(today)).thenReturn(false);
+        when(challengeDao.existsChallengeByEndDate(today)).thenReturn(true);
+
+        when(challengeDao.updateChallengeStatus(today)).thenReturn(3);
+
+        challengeService.modifyChallengeStatus();
+
+        verify(challengeDao).existsChallengeByStartDate(today);
+        verify(challengeDao).existsChallengeByEndDate(today);
+        verify(challengeDao).updateChallengeStatus(today);
+    }
+
+    @Test
+    @DisplayName("시작일이 오늘인 챌린지의 상태를 ongoing으로 업데이트 한다.")
+    void modifyChallengeStatus_onging() {
+        LocalDate today = LocalDate.now();
+        when(challengeDao.existsChallengeByStartDate(today)).thenReturn(true);
+        when(challengeDao.existsChallengeByEndDate(today)).thenReturn(false);
+
+        when(challengeDao.updateChallengeStatus(today)).thenReturn(3);
+
+        challengeService.modifyChallengeStatus();
+
+        verify(challengeDao).existsChallengeByStartDate(today);
+        verify(challengeDao).updateChallengeStatus(today);
     }
 }
