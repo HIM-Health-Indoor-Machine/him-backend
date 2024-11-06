@@ -3,7 +3,9 @@ package com.him.fpjt.him_backend.exercise.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,8 +15,10 @@ import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import com.him.fpjt.him_backend.exercise.domain.ExerciseType;
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
+import com.him.fpjt.him_backend.exercise.dto.ChallengeDto;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,6 +93,52 @@ public class ChallegeServiceImplTest {
         assertNotNull(challenge);
         verify(challengeDao, times(1)).selectChallenge(1L);
     }
+
+    @Test
+    @DisplayName("존재하는 챌린지를 성공적으로 업데이트")
+    void modifyChallenge_successfulUpdate() {
+        long challengeId = 1L;
+        ChallengeDto challengeDto = new ChallengeDto(ExerciseType.SQUAT, LocalDate.now(), LocalDate.now().plusDays(30), 50);
+        Challenge challenge = new Challenge(challengeId, ChallengeStatus.ONGOING, ExerciseType.PUSHUP, LocalDate.now().minusDays(10), LocalDate.now().plusDays(31), 30, 4, 1L);
+
+        when(challengeService.getChallengeDetail(challengeId)).thenReturn(challenge);
+        when(challengeDao.updateChallenge(any(Challenge.class))).thenReturn(1);
+
+        boolean result = challengeService.modifyChallenge(challengeId, challengeDto);
+
+        assertTrue(result);
+        verify(challengeDao).updateChallenge(any(Challenge.class));
+    }
+
+    @Test
+    @DisplayName("없는 챌린지를 업데이트하려고 할 때 NoSuchElementException 발생")
+    void modifyChallenge_noSuchElementException() {
+        long challengeId = 1L;
+        ChallengeDto challengeDto = new ChallengeDto(ExerciseType.SQUAT, LocalDate.now(), LocalDate.now().plusDays(10), 100);
+
+        when(challengeService.getChallengeDetail(challengeId)).thenReturn(null);
+
+        assertThrows(NoSuchElementException.class, () -> {
+            challengeService.modifyChallenge(challengeId, challengeDto);
+        });
+    }
+
+    @Test
+    @DisplayName("업데이트가 실패할 때 IllegalStateException 발생")
+    void modifyChallenge_illegalStateException() {
+        long challengeId = 1L;
+        ChallengeDto challengeDto = new ChallengeDto(ExerciseType.PUSHUP, LocalDate.now(),
+                LocalDate.now().plusDays(10), 100);
+        Challenge challenge = new Challenge(challengeId, ChallengeStatus.ONGOING, ExerciseType.PUSHUP, LocalDate.now().minusDays(10), LocalDate.now().plusDays(31), 30, 4, 1L);
+
+        when(challengeService.getChallengeDetail(challengeId)).thenReturn(challenge);
+        when(challengeDao.updateChallenge(any(Challenge.class))).thenReturn(0);
+
+        assertThrows(IllegalStateException.class, () -> {
+            challengeService.modifyChallenge(challengeId, challengeDto);
+        });
+    }
+
     @Test
     @DisplayName("챌린지 삭제 성공 시에 true를 반환한다.")
     public void removeChallenge_success() {
