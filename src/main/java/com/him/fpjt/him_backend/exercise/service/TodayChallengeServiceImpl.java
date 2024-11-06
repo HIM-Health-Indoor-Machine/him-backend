@@ -89,7 +89,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         return 0;
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     @Override
     public void modifyUnachievementTodayChallenge() throws Exception {
