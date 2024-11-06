@@ -31,6 +31,16 @@
   <update id="updateChallengeAchieveCnt" parameterType="long">
     UPDATE challenge SET achieve_cnt = achieve_cnt + 1 WHERE id = #{id}
   </update>
+  <select id="existsChallengeByStartDate" parameterType="java.time.LocalDate" resultType="boolean">
+    SELECT EXISTS (
+        SELECT * FROM challenge WHERE start_dt = #{today}
+    )
+  </select>
+  <select id="existsChallengeByEndDate" parameterType="java.time.LocalDate" resultType="boolean">
+    SELECT EXISTS (
+             SELECT * FROM challenge WHERE end_dt = #{today}
+             )
+  </select>
   <select id="findChallengesWithoutTodayRecord" parameterType="java.time.LocalDate" resultType="Challenge">
     SELECT *
     FROM challenge c
