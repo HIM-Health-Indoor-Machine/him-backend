@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface TodayChallengeDao {
     public long insertTodayChallenge(TodayChallenge todayChallenge);
-    public boolean existsTodayChallengeByChallengeIdAndDate(long challengeId, LocalDate date);
     public TodayChallenge selectTodayChallengeById(long id);
     public long updateTodayChallenge(TodayChallenge todayChallenge);
     public boolean checkAchievementBonus(long challengeId, LocalDate date, int days);

@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,6 +22,7 @@ import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
 import com.him.fpjt.him_backend.user.service.UserService;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,48 +47,26 @@ public class TodayChallengeServiceImplTest {
     }
 
     @Test
-    @DisplayName("오늘의 챌린지 생성 성공 시 todayChalllengeId를 반환한다.")
+    @DisplayName("진행중인 챌린지들을 모두 조회하여, 오늘 날짜의 오늘의 챌린지를 생성한다.")
     public void createTodayChallenge_success() {
-        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
+        List<Long> allChallengeIds = Arrays.asList(1L, 2L, 3L);
+        when(challengeService.getAllChallengeId()).thenReturn(allChallengeIds);
+        when(todayChallengeDao.insertTodayChallenge(any(TodayChallenge.class))).thenReturn(1L);
 
-        when(challengeService.existsChallengeById(1L)).thenReturn(true);
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(false);
-        when(todayChallengeDao.insertTodayChallenge(todayChallenge)).thenReturn(1L);
+        todayChallengeService.createTodayChallenge();
 
-        long resultId = todayChallengeService.createTodayChallenge(todayChallenge);
-
-        assertEquals(1L, resultId);
-        verify(todayChallengeDao).insertTodayChallenge(todayChallenge);
-    }
-    @Test
-    @DisplayName("존재하지 않는 챌린지 id의 경우, 예외가 발생합니다.")
-    public void createTodayChallenge_notExistChallengeId() {
-        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
-        when(challengeService.existsChallengeById(1L)).thenReturn(false);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> todayChallengeService.createTodayChallenge(todayChallenge),
-                "존재하지 않는 챌린지 id 입니다."
-        );
-    }
-    @Test
-    @DisplayName("이미 오늘의 챌린지가 있는 경우, 예외가 발생한다.")
-    void createTodayChallenge_duplicate() {
-        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
-        when(challengeService.existsChallengeById(1L)).thenReturn(true);
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(true);
-
-        assertThrows(IllegalStateException.class, () -> todayChallengeService.createTodayChallenge(todayChallenge));
+        verify(challengeService, times(1)).getAllChallengeId();
+        verify(todayChallengeDao, times(allChallengeIds.size())).insertTodayChallenge(any(TodayChallenge.class));
     }
 
     @Test
     @DisplayName("오늘의 챌린지 생성 실패 시, 예외가 발생한다.")
     void createTodayChallenge_fail() {
-        TodayChallenge todayChallenge = new TodayChallenge(0, 1L, LocalDate.now());
-        when(todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(1L, LocalDate.now())).thenReturn(false);
-        when(todayChallengeDao.insertTodayChallenge(todayChallenge)).thenReturn(0L);
+        List<Long> allChallengeIds = Arrays.asList(1L, 2L, 3L);
+        when(challengeService.getAllChallengeId()).thenReturn(allChallengeIds);
+        when(todayChallengeDao.insertTodayChallenge(any(TodayChallenge.class))).thenReturn(0L);
 
-        assertThrows(RuntimeException.class, () -> todayChallengeService.createTodayChallenge(todayChallenge));
+        assertThrows(RuntimeException.class, () -> todayChallengeService.createTodayChallenge());
     }
 
     @Test
@@ -113,7 +92,7 @@ public class TodayChallengeServiceImplTest {
 
     @Test
     @DisplayName("오늘의 챌린지를 달성할 경우, 경험치 5EXP를 추가한다.")
-    void modifyTodayChallenge_getDailyExp() {
+    void modifyTodayChallenge_getDailyExp() throws Exception {
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0,1L);
         TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, 1L, LocalDate.now());
         TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, 1L, LocalDate.now());
@@ -121,7 +100,7 @@ public class TodayChallengeServiceImplTest {
         when(todayChallengeDao.selectTodayChallengeById(todayChallengeDto.getId())).thenReturn(todayChallenge);
         when(todayChallengeDao.updateTodayChallenge(todayChallenge)).thenReturn(1L);
         when(challengeService.getChallengeDetail(todayChallenge.getChallengeId())).thenReturn(challenge);
-        when(userService.modifyUserExp(anyLong(), anyInt())).thenReturn(true);
+        doNothing().when(userService).modifyUserExp(anyLong(), anyInt());
 
         assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
 
@@ -129,7 +108,7 @@ public class TodayChallengeServiceImplTest {
     }
     @Test
     @DisplayName("7일 내내 오늘의 챌린지 목표 달성 시, 경험치 10EXP를 추가한다.")
-    void modifyTodayChallenge_get7DaysExp() {
+    void modifyTodayChallenge_get7DaysExp() throws Exception {
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10, 0, 1L);
         for (int i = 0; i < 7; i++) {
@@ -149,7 +128,7 @@ public class TodayChallengeServiceImplTest {
     }
     @Test
     @DisplayName("8일 내내 오늘의 챌린지 목표 달성 시, 경험치 5EXP를 추가한다.")
-    void modifyTodayChallenge_getDailyExp_when8daysStreak() {
+    void modifyTodayChallenge_getDailyExp_when8daysStreak() throws Exception {
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
         for (int i = 1; i <= 8; i++) {
@@ -171,7 +150,7 @@ public class TodayChallengeServiceImplTest {
     }
     @Test
     @DisplayName("30일 내내 오늘의 챌린지 목표 달성 시, 경험치 100EXP를 추가한다.")
-    void modifyTodayChallenge_get30DaysExp() {
+    void modifyTodayChallenge_get30DaysExp() throws Exception {
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
         for (int i = 0; i < 30; i++) {
@@ -193,14 +172,14 @@ public class TodayChallengeServiceImplTest {
     }
     @Test
     @DisplayName("오늘의 챌린지 목표를 달성하지 못했을 시, 경험치 3EXP를 차감한다.")
-    void modifyUnachievementTodayChallenge() {
+    void modifyUnachievementTodayChallenge() throws Exception {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         Challenge challenge = new Challenge(1L, ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now(), LocalDate.now(), 10L, 0,1L);
         TodayChallenge unachievedTodayChallenge = new TodayChallenge(1L, 5L, 1L, yesterday);
 
         when(todayChallengeDao.findUnachievedChallenges(yesterday)).thenReturn(List.of(unachievedTodayChallenge));
         when(challengeService.getChallengeDetail(unachievedTodayChallenge.getChallengeId())).thenReturn(challenge);
-        when(userService.modifyUserExp(anyLong(), eq(ExpPoints.DAILY_PENALTY_EXP))).thenReturn(true);
+        doNothing().when(userService).modifyUserExp(anyLong(), anyInt());
 
         todayChallengeService.modifyUnachievementTodayChallenge();
         verify(userService).modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_PENALTY_EXP);
