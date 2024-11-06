@@ -8,6 +8,8 @@ public class ExpPoints {
     public static final int SEVEN_DAY = 7;
     public static final int THIRTY_DAY = 30;
 
+    public static final int DAILY_ATTENDANCE_EXP = 1;
+
     public static final int GAME_EASY_MODE = 5;
     public static final int GAME_MEDIUM_MODE = 10;
     public static final int GAME_HARD_MODE = 20;
