@@ -22,19 +22,7 @@ public class User {
         this.nickname = nickname;
     }
 
-    public void updateEmail(String email) {
-        this.email = email;
-    }
-
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
-    }
-
-    public void updateTier(Tier tier) {
-        this.tier = tier;
-    }
-
-    public void updateExp(long exp) {
-        this.exp = exp;
     }
 }
