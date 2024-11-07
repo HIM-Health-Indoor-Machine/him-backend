@@ -86,7 +86,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Override
-    @Scheduled(cron = "50 59 23 * * ?")
+    @Scheduled(cron = "10 0 0 * * ?")
     public void modifyChallengeStatus() {
         LocalDate today = LocalDate.now();
         if (challengeDao.existsChallengeByStartDate(today) || challengeDao.existsChallengeByEndDate(today)) {
