@@ -11,6 +11,7 @@ public class User {
     private long id;
     private String nickname;
     private String email;
+    private String password;
     private String profileImg;
     private Tier tier = Tier.IRON;
     private long exp = 0;
