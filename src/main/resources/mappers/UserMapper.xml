@@ -15,4 +15,9 @@
     <select id="selectUserById" parameterType="long" resultType="User">
         SELECT * FROM user WHERE id = #{id}
     </select>
+    <update id="updateUserInfo" parameterType="User" >
+        UPDATE user
+        SET nickname = #{nickname}, profile_img = #{profileImg}
+        WHERE id = #{id}
+    </update>
 </mapper>

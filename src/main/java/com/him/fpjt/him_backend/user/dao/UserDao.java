@@ -8,4 +8,5 @@ public interface UserDao {
     int updateUserExp(long id, long expPoints);
     List<Long> selectAllUserIds();
     User selectUserById(long id);
+    int updateUserInfo(User user);
 }
