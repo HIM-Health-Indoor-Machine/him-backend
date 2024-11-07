@@ -12,4 +12,7 @@
     <select id="selectAllUserIds" resultType="long">
         SELECT id FROM user
     </select>
+    <select id="selectUserById" parameterType="long" resultType="User">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
 </mapper>
