@@ -16,4 +16,5 @@ public interface ChallengeService {
     public boolean modifyChallengeAchieveCnt(long id);
     public List<Challenge> findChallengesWithoutTodayRecord(LocalDate yesterday);
     public void modifyChallengeStatus();
-}
+    public List<Long> getAllChallengeId();
+}       

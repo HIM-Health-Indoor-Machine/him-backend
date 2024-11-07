@@ -28,20 +28,17 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         this.userService = userService;
     }
 
+    @Scheduled(cron = "0 1 0 * * ?")
     @Transactional
     @Override
-    public long createTodayChallenge(TodayChallenge todayChallenge) {
-        if(!challengeService.existsChallengeById(todayChallenge.getChallengeId())) {
-            throw new IllegalArgumentException("존재하지 않는 챌린지 id 입니다.");
+    public void createTodayChallenge() {
+        List<Long> allChallengeId = challengeService.getAllChallengeId();
+        for (Long challengeId : allChallengeId) {
+            long todayChallengeId = todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, challengeId, LocalDate.now()));
+            if (todayChallengeId <= 0) {
+                throw new RuntimeException("챌린지 생성에 실패했습니다.");
+            }
         }
-        if (isTodayChallengeExists(todayChallenge.getChallengeId(), todayChallenge.getDate())) {
-            throw new IllegalStateException("이미 동일한 챌린지가 존재합니다.");
-        }
-        long todayChallengeId = todayChallengeDao.insertTodayChallenge(todayChallenge);
-        if (todayChallengeId <= 0) {
-            throw new RuntimeException("챌린지 생성에 실패했습니다.");
-        }
-        return todayChallengeId;
     }
     @Override
     public TodayChallenge getTodayChallengeById(long id) {
@@ -51,7 +48,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
 
     @Transactional
     @Override
-    public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto) {
+    public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto) throws Exception {
         TodayChallenge todayChallenge = getTodayChallengeById(newTodayChallengeDto.getId());
         todayChallenge.setCnt(newTodayChallengeDto.getCnt());
         boolean isUpdated = todayChallengeDao.updateTodayChallenge(todayChallenge) > 0;
@@ -66,7 +63,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         return isUpdated;
     }
 
-    private void addAchievementExp(TodayChallenge todayChallenge, Challenge challenge) {
+    private void addAchievementExp(TodayChallenge todayChallenge, Challenge challenge) throws Exception {
         int bonusExp = calculateAchievementBonusExp(todayChallenge.getChallengeId(), todayChallenge.getDate());
         if (bonusExp > 0) {
             userService.modifyUserExp(challenge.getUserId(), bonusExp);
@@ -79,10 +76,6 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         return todayChallenge.getCnt() >= goalCnt;
     }
 
-    private boolean isTodayChallengeExists(long challengeId, LocalDate date) {
-        return todayChallengeDao.existsTodayChallengeByChallengeIdAndDate(challengeId, date);
-    }
-
     private int calculateAchievementBonusExp(long challengeId, LocalDate currentDate) {
         boolean isSevenDayStreak = todayChallengeDao.checkAchievementBonus(challengeId, currentDate, ExpPoints.SEVEN_DAY);
         boolean isThirtyDayStreak = todayChallengeDao.checkAchievementBonus(challengeId, currentDate, ExpPoints.THIRTY_DAY);
@@ -92,21 +85,15 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         return 0;
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     @Override
-    public void modifyUnachievementTodayChallenge() {
+    public void modifyUnachievementTodayChallenge() throws Exception {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         List<TodayChallenge> unachievedTodayChallenges = todayChallengeDao.findUnachievedChallenges(yesterday);
 
         for (TodayChallenge unachievedTodayChallenge : unachievedTodayChallenges) {
             userService.modifyUserExp(challengeService.getChallengeDetail(unachievedTodayChallenge.getChallengeId()).getUserId(), ExpPoints.DAILY_PENALTY_EXP);
-        }
-
-        List<Challenge> missingChallenges = challengeService.findChallengesWithoutTodayRecord(yesterday);
-
-        for (Challenge missingChallenge : missingChallenges) {
-            userService.modifyUserExp(missingChallenge.getUserId(), ExpPoints.DAILY_PENALTY_EXP);
         }
     }
 }

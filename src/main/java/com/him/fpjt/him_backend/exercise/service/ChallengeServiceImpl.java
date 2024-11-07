@@ -81,8 +81,8 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Override
-    public List<Challenge> findChallengesWithoutTodayRecord(LocalDate yesterday) {
-        return challengeDao.findChallengesWithoutTodayRecord(yesterday);
+    public List<Long> getAllChallengeId() {
+        return challengeDao.selectAllChallengeId();
     }
 
     @Override

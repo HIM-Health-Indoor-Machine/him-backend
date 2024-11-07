@@ -62,6 +62,9 @@
           AND tc.date = #{yesterday}
       )
   </select>
+  <select id="selectAllChallengeId" resultType="long">
+    SELECT id FROM challenge WHERE status = 'ONGOING'
+  </select>
   <update id="updateChallenge" parameterType="Challenge">
     UPDATE challenge
     SET type = #{type}, start_dt = #{startDt}, end_dt = #{endDt}, goal_cnt = #{goalCnt}
