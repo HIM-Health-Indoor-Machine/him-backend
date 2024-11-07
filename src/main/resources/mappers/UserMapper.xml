@@ -7,7 +7,7 @@
     <update id="updateUserExp" parameterType="map">
         UPDATE user
         SET exp = exp + #{expPoints}
-        WHERE id = #{userId}
+        WHERE id = #{id}
     </update>
     <select id="selectAllUserIds" resultType="long">
         SELECT id FROM user

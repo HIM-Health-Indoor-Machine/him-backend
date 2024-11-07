@@ -16,8 +16,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void modifyUserExp(long userId, long expPoints) {
-        int updateResult = userDao.updateUserExp(userId, expPoints);
+    public void modifyUserExp(long id, long expPoints) {
+        int updateResult = userDao.updateUserExp(id, expPoints);
         if (updateResult == 0) {
             throw new UnsupportedOperationException("사용자 경험치 업데이트에 실패했습니다.");
         }
