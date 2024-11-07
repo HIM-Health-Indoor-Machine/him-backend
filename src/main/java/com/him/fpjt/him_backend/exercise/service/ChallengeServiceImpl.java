@@ -75,14 +75,10 @@ public class ChallengeServiceImpl implements ChallengeService {
         return challengeDao.existsChallengeById(id);
     }
 
+
     @Override
     public boolean modifyChallengeAchieveCnt(long id) {
         return challengeDao.updateChallengeAchieveCnt(id) > 0;
-    }
-
-    @Override
-    public List<Long> getAllChallengeId() {
-        return challengeDao.selectAllChallengeId();
     }
 
     @Override
@@ -93,5 +89,10 @@ public class ChallengeServiceImpl implements ChallengeService {
             int changedCount = challengeDao.updateChallengeStatus(today);
             log.info("updated challenge count : {}", changedCount);
         }
+    }
+
+    @Override
+    public List<Long> getAllChallengeId() {
+        return challengeDao.selectAllChallengeId();
     }
 }
