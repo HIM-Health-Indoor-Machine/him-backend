@@ -31,7 +31,43 @@
   <update id="updateChallengeAchieveCnt" parameterType="long">
     UPDATE challenge SET achieve_cnt = achieve_cnt + 1 WHERE id = #{id}
   </update>
+  <select id="existsChallengeByStartDate" parameterType="java.time.LocalDate" resultType="boolean">
+    SELECT EXISTS (
+        SELECT * FROM challenge WHERE start_dt = #{today}
+    )
+  </select>
+  <select id="existsChallengeByEndDate" parameterType="java.time.LocalDate" resultType="boolean">
+    SELECT EXISTS (
+             SELECT * FROM challenge WHERE end_dt = #{today}
+             )
+  </select>
+  <update id="updateChallengeStatus" parameterType="java.time.LocalDate">
+    UPDATE challenge
+    SET status =
+          CASE
+            WHEN end_dt = #{today} THEN 'DONE'
+            WHEN start_dt = #{today} THEN 'ONGOING'
+            ELSE status
+            END
+    WHERE start_dt = #{today} OR end_dt = #{today}
+  </update>
+  <select id="findChallengesWithoutTodayRecord" parameterType="java.time.LocalDate" resultType="Challenge">
+    SELECT *
+    FROM challenge c
+    WHERE c.status = 'ONGOING'
+    AND NOT EXISTS(
+        SELECT 1
+        FROM today_challenge tc
+        WHERE tc.challenge_id = c.id
+          AND tc.date = #{yesterday}
+      )
+  </select>
   <select id="selectAllChallengeId" resultType="long">
     SELECT id FROM challenge WHERE status = 'ONGOING'
   </select>
+  <update id="updateChallenge" parameterType="Challenge">
+    UPDATE challenge
+    SET type = #{type}, start_dt = #{startDt}, end_dt = #{endDt}, goal_cnt = #{goalCnt}
+    WHERE id = #{id}
+  </update>
 </mapper>

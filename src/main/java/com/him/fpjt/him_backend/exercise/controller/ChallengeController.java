@@ -2,14 +2,17 @@ package com.him.fpjt.him_backend.exercise.controller;
 
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
+import com.him.fpjt.him_backend.exercise.dto.ChallengeDto;
 import com.him.fpjt.him_backend.exercise.service.ChallengeService;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,6 +53,19 @@ public class ChallengeController {
         return challenges != null ?
                 ResponseEntity.ok().body(challenges):
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body("일치하는 챌린지가 없습니다.");
+    }
+    @PutMapping("/{challengeId}")
+    public ResponseEntity<String> modifyChallenge(@PathVariable("challengeId") long id,
+                                            @RequestBody ChallengeDto challenge) {
+        try {
+            challengeService.modifyChallenge(id, challenge);
+            ResponseEntity.ok().build();
+        } catch (NoSuchElementException e) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalStateException e) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+        return null;
     }
     @DeleteMapping("/{challengeId}")
     public ResponseEntity<String> removeChallenge(@PathVariable("challengeId") long id) {

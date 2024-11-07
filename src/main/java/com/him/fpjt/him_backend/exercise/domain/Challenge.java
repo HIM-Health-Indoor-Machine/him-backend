@@ -29,4 +29,20 @@ public class Challenge {
         this.achievedCnt = 0;
         this.userId = userId;
     }
+
+    public void updateType(ExerciseType type) {
+        this.type = type;
+    }
+
+    public void updateStartDt(LocalDate startDt) {
+        this.startDt = startDt;
+    }
+
+    public void updateEndDt(LocalDate endDt) {
+        this.endDt = endDt;
+    }
+
+    public void updateGoalCnt(long goalCnt) {
+        this.goalCnt = goalCnt;
+    }
 }
