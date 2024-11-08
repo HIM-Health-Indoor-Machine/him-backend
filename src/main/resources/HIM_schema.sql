@@ -84,3 +84,17 @@ VALUES
     ('2024-04-02', false, 2),
     ('2024-04-03', true, 3);
 SELECT * FROM attendance;
+
+CREATE TABLE verification_code (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    code VARCHAR(20) NOT NULL,
+    issued_at DATETIME NOT NULL
+);
+
+INSERT INTO verification_code (email, code, issued_at) VALUES
+    ('user1@example.com', 'A1B2C3D4E5', '2024-11-08 09:15:30'),
+    ('user2@example.com', 'F6G7H8I9J0', '2024-11-08 10:00:00'),
+    ('user3@example.com', 'K1L2M3N4O5', '2024-11-08 11:45:20');
+
+select * from verification_code;
