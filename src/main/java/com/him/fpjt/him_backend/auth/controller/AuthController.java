@@ -44,4 +44,13 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+    @PostMapping("/verify-code")
+    public ResponseEntity<String> verifyVerificationCode(@Valid @RequestBody VerificationCodeDto verificationCodeDto) {
+        try {
+            authService.verifyVerificationCode(verificationCodeDto);
+            return ResponseEntity.ok().body("인증에 성공했습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

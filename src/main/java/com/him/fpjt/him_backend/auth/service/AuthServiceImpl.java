@@ -50,4 +50,15 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalStateException("인증 코드 저장에 실패했습니다.");
         }
     }
+
+    @Transactional
+    @Override
+    public void verifyVerificationCode(VerificationCodeDto verificationCodeDto) {
+        VerificationCode verificationCode = verificationCodeDao.selectVerificationCodeByEmail(verificationCodeDto.getEmail());
+        if (verificationCode == null || verificationCode.getIssuedAt() == null ||
+                !verificationCode.getCode().equals(verificationCodeDto.getCode()) ||
+                Duration.between(verificationCode.getIssuedAt(), LocalDateTime.now()).toMinutes() > 15) {
+            throw new IllegalArgumentException("인증에 실패했습니다.");
+        }
+    }
 }
