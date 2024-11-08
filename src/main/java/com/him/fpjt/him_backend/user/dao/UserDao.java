@@ -7,3 +7,4 @@ public interface UserDao {
     int updateUserExp(long userId, long expPoints);
     List<Long> selectAllUserIds();
 }
+    boolean existsDuplicatedNickname(String nickname);
