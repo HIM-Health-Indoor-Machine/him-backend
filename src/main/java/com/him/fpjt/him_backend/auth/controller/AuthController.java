@@ -31,4 +31,17 @@ public class AuthController {
         }
         return ResponseEntity.ok().body("사용 가능한 닉네임입니다.");
     }
+
+    @PostMapping("/send-verification-code")
+    public ResponseEntity<String> sendVerificationCode(@Valid @RequestBody VerificationCodeDto verificationCodeDto) {
+        try {
+            System.out.println(verificationCodeDto.toString());
+            authService.sendVerificationCode(verificationCodeDto);
+            return ResponseEntity.ok().body("인증코드가 발송되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

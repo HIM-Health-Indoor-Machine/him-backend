@@ -34,4 +34,20 @@ public class AuthServiceImpl implements AuthService {
     public boolean checkDuplicatedNickname(String nickname) {
         return userDao.existsDuplicatedNickname(nickname);
     }
+    @Transactional
+    @Override
+    public void sendVerificationCode(VerificationCodeDto verificationCodeDto) {
+        String code = codeGenerator.generateCode();
+        String text = emailSender.buildTextForVerificationCode(code);
+        emailSender.sendVerificationCode(verificationCodeDto.getEmail(), EmailTemplates.VERIFICATION_CODE_SUBJECT, text);
+        saveVerificationCode(verificationCodeDto, code);
+    }
+
+    private void saveVerificationCode(VerificationCodeDto verificationCodeDto, String code) {
+        VerificationCode verificationCode = new VerificationCode(verificationCodeDto.getEmail(), code, LocalDateTime.now());
+        int result = verificationCodeDao.insertVerificationCode(verificationCode);
+        if (result == 0) {
+            throw new IllegalStateException("인증 코드 저장에 실패했습니다.");
+        }
+    }
 }
