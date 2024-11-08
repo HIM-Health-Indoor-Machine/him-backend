@@ -6,4 +6,7 @@
     INSERT INTO verification_code (email, code, issued_at)
     VALUES (#{email}, #{code}, #{issuedAt})
   </insert>
+  <select id="selectVerificationCodeByEmail" parameterType="String" resultType="com.him.fpjt.him_backend.auth.domain.VerificationCode">
+    SELECT * FROM verification_code WHERE email = #{email} ORDER BY issued_at DESC LIMIT 1
+  </select>
 </mapper>
