@@ -23,19 +23,19 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserInfo(@PathVariable("userId") long id) {
+    public ResponseEntity<?> getUserInfo(@PathVariable("userId") long userId) {
         try {
-            UserInfoDto userInfoDto = userService.getUserById(id);
+            UserInfoDto userInfoDto = userService.getUserById(userId);
             return ResponseEntity.ok().body(userInfoDto);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
     @PutMapping("/{userId}")
-    public ResponseEntity<?> modifyUserInfo(@PathVariable("userId") long id,
+    public ResponseEntity<?> modifyUserInfo(@PathVariable("userId") long userId,
                                     @RequestBody UserModifyDto userModifyDto) {
         try {
-            userService.modifyUserInfo(id, userModifyDto);
+            userService.modifyUserInfo(userId, userModifyDto);
             return ResponseEntity.ok().build();
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

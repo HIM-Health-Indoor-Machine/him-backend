@@ -9,6 +9,6 @@ public interface UserService {
 
     void modifyUserExp(long userId, long expPoints) throws Exception;
     List<Long> getAllUserIds();
-    UserInfoDto getUserById(long id);
-    void modifyUserInfo(long id, UserModifyDto userModifyDto);
+    UserInfoDto getUserById(long userId);
+    void modifyUserInfo(long userId, UserModifyDto userModifyDto);
 }

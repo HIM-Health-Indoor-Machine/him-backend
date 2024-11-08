@@ -20,8 +20,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void modifyUserExp(long id, long expPoints) {
-        int updateResult = userDao.updateUserExp(id, expPoints);
+    public void modifyUserExp(long userId, long expPoints) {
+        int updateResult = userDao.updateUserExp(userId, expPoints);
         if (updateResult == 0) {
             throw new UnsupportedOperationException("사용자 경험치 업데이트에 실패했습니다.");
         }
@@ -33,13 +33,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoDto getUserById(long id) {
-        User user = verifyUserExists(id);
+    public UserInfoDto getUserById(long userId) {
+        User user = verifyUserExists(userId);
         return new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(),
                 user.getProfileImg(), user.getTier(), user.getExp());
     }
-    private User verifyUserExists(long id) {
-        User user = userDao.selectUserById(id);
+    private User verifyUserExists(long userId) {
+        User user = userDao.selectUserById(userId);
         if (user == null) {
             throw new NoSuchElementException("없는 회원입니다.");
         }
@@ -47,8 +47,8 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional
-    public void modifyUserInfo(long id, UserModifyDto userModifyDto) {
-        User user = verifyUserExists(id);
+    public void modifyUserInfo(long userId, UserModifyDto userModifyDto) {
+        User user = verifyUserExists(userId);
         modifyUserFields(userModifyDto, user);
         int result = userDao.updateUserInfo(user);
         if (result == 0) {
@@ -60,5 +60,4 @@ public class UserServiceImpl implements UserService {
         user.updateNickname(userModifyDto.getNickname());
         user.updateProfileImg(userModifyDto.getProfileImg());
     }
-
 }

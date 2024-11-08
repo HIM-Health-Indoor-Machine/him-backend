@@ -5,8 +5,8 @@ import java.util.List;
 
 public interface UserDao {
 
-    int updateUserExp(long id, long expPoints);
+    int updateUserExp(long userId, long expPoints);
     List<Long> selectAllUserIds();
-    User selectUserById(long id);
+    User selectUserById(long userId);
     int updateUserInfo(User user);
 }
