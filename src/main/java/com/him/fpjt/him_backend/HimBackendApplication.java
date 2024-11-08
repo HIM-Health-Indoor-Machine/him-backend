@@ -10,7 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @MapperScans({
 		@MapperScan("com.him.fpjt.him_backend.exercise.dao"),
-		@MapperScan("com.him.fpjt.him_backend.user.dao")
+		@MapperScan("com.him.fpjt.him_backend.user.dao"),
+		@MapperScan("com.him.fpjt.him_backend.auth.dao")
 })
 public class HimBackendApplication {
 
