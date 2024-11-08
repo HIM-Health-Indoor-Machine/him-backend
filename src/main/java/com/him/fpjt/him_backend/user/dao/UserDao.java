@@ -6,8 +6,9 @@ import java.util.List;
 public interface UserDao {
 
     int updateUserExp(long userId, long expPoints);
+
     List<Long> selectAllUserIds();
     User selectUserById(long userId);
     int updateUserInfo(User user);
-}
     boolean existsDuplicatedNickname(String nickname);
+}
