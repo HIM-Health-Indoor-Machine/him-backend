@@ -78,4 +78,29 @@ public class AuthServiceImplTest {
         verify(emailSender).buildTextForVerificationCode("123456");
         verify(verificationCodeDao).insertVerificationCode(any(VerificationCode.class));
     }
+    @Test
+    @DisplayName("올바른 인증 번호인 경우, 인증이 성공한다.")
+    void verifyVerificationCode_success() {
+        VerificationCode verificationCode = new VerificationCode("ssafy@ssafy.com", "123456",
+                LocalDateTime.now());
+        VerificationCodeDto verificationCodeDto = new VerificationCodeDto("ssafy@ssafy.com", "123456");
+
+        when(verificationCodeDao.selectVerificationCodeByEmail("ssafy@ssafy.com")).thenReturn(verificationCode);
+
+        authService.verifyVerificationCode(verificationCodeDto);
+
+        verify(verificationCodeDao).selectVerificationCodeByEmail(verificationCodeDto.getEmail());
+    }
+
+    @Test
+    @DisplayName("잘못된 인증 번호인 경우, IllegalArgumentException 예외가 발생한다.")
+    void verifyVerificationCode_illegalArgumentException() {
+        VerificationCode verificationCode = new VerificationCode("ssafy@ssafy.com", "123456",
+                LocalDateTime.now().minusMinutes(16));
+        VerificationCodeDto verificationCodeDto = new VerificationCodeDto("ssafy@ssafy.com", "123456");
+
+        when(verificationCodeDao.selectVerificationCodeByEmail(verificationCodeDto.getEmail())).thenReturn(verificationCode);
+
+        assertThrows(IllegalArgumentException.class, () -> authService.verifyVerificationCode(verificationCodeDto));
+    }
 }
