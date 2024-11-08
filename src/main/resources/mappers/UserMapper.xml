@@ -12,6 +12,11 @@
     <select id="selectAllUserIds" resultType="long">
         SELECT id FROM user
     </select>
+    <select id="existsDuplicatedNickname" parameterType="String" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM user
+        WHERE nickname = #{nickname}
+    </select>
     <select id="selectUserById" parameterType="long" resultType="User">
         SELECT * FROM user WHERE id = #{userId}
     </select>

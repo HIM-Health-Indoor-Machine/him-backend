@@ -10,3 +10,4 @@ public interface UserDao {
     User selectUserById(long userId);
     int updateUserInfo(User user);
 }
+    boolean existsDuplicatedNickname(String nickname);
