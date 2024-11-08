@@ -6,16 +6,18 @@ CREATE TABLE `user`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `nickname` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255),
+    `password` VARCHAR(255) NOT NULL,
     `profile_img` VARCHAR(255),
     `tier` VARCHAR(255) NOT NULL,
     `exp` BIGINT NOT NULL
 );
 -- user 객체에 목업 데이터 삽입
-INSERT INTO `user` (`nickname`, `email`, `profile_img`, `tier`, `exp`)
-VALUES 
-    ('Icarus', 'email_example1@gmail.com', 'img_example1.jpg', 'BRONZE', 1000),
-    ('Jay', 'email_example2@gmail.com', 'img_example2.jpg', 'MASTER', 2000),
-    ('Ollie', 'email_example3@gmail.com', 'img_example3.jpg', 'DIAMOND', 3000);
+INSERT INTO `user` (`nickname`, `email`, `password`, `profile_img`, `tier`, `exp`)
+VALUES
+    ('Icarus', 'email_example1@gmail.com', 'hashed_password1', 'img_example1.jpg', 'BRONZE', 1000),
+    ('Jay', 'email_example2@gmail.com', 'hashed_password2', 'img_example2.jpg', 'MASTER', 2000),
+    ('Ollie', 'email_example3@gmail.com', 'hashed_password3', 'img_example3.jpg', 'DIAMOND', 3000);
+
 SELECT * FROM user;
 
 CREATE TABLE `challenge`(
