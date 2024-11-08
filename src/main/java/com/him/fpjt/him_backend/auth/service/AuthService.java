@@ -6,4 +6,5 @@ public interface AuthService {
      boolean checkDuplicatedNickname(String nickname);
      void sendVerificationCode(VerificationCodeDto emailDto);
      void verifyVerificationCode(VerificationCodeDto emailDto);
+     void removeExpiredVerificationCode();
 }

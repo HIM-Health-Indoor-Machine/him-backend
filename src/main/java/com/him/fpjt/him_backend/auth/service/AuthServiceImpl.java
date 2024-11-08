@@ -61,4 +61,11 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("인증에 실패했습니다.");
         }
     }
+    @Override
+    @Transactional
+    @Scheduled(cron = "0 0 2 * * ?")
+    public void removeExpiredVerificationCode(){
+        LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(15);
+        verificationCodeDao.deleteExpiredCodes(expiredTime);
+    }
 }
