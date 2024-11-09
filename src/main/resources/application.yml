@@ -1,10 +1,22 @@
 spring:
   profiles:
     active: local
+  mail:
+    host: ${MAIL_HOST}
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 50000
+          starttls.enable: true
+        debug: true
 
 mybatis:
   mapper-locations: mappers/*.xml
-  type-aliases-package: com.him.fpjt.him_backend.exercise.domain, com.him.fpjt.him_backend.user.domain
+  type-aliases-package: com.him.fpjt.him_backend.exercise.domain, com.him.fpjt.him_backend.user.domain, com.him.fpjt.him_backend.auth.domain
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 ---
