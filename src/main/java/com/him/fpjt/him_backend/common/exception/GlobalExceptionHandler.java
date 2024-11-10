@@ -4,6 +4,7 @@ import com.him.fpjt.him_backend.common.exception.dto.ExceptionDto;
 import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,5 +33,11 @@ public class GlobalExceptionHandler {
         log.error("입력 값 검증 오류 발생 : {}", errors, e);
         final ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST,  "입력 값이 올바르지 않습니다.", LocalDateTime.now(), errors);
         return ResponseEntity.badRequest().body(dto);
+    }
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ExceptionDto> handleNoSuchElementException(NoSuchElementException e) {
+        log.error("리소스 없음 : {}", e.getMessage(), e);
+        final ExceptionDto dto = new ExceptionDto(HttpStatus.NO_CONTENT, e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(dto);
     }
 }
