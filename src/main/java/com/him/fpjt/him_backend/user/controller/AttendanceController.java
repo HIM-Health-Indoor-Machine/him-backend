@@ -24,27 +24,15 @@ public class AttendanceController {
 
     @GetMapping("/check/{userId}")
     public ResponseEntity<String> setAttendanceStatus(@PathVariable("userId") long userId){
-        try {
-            attendenceService.setAttendanceStatus(userId, LocalDate.now());
-            attendenceService.addAttendanceExp(userId);
-            return ResponseEntity.ok().build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        attendenceService.setAttendanceStatus(userId, LocalDate.now());
+        attendenceService.addAttendanceExp(userId);
+        return ResponseEntity.ok().build();
     }
     @GetMapping("{userId}")
     public ResponseEntity<?> getMonthlyAttendance(@PathVariable("userId") long userId,
                                                 @RequestParam("year") int year,
                                                 @RequestParam("month") int month) {
-        try {
-            List<Attendance> attendances = attendenceService.getMonthlyAttendance(userId, year, month);
-            return ResponseEntity.ok().body(attendances);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        List<Attendance> attendances = attendenceService.getMonthlyAttendance(userId, year, month);
+        return ResponseEntity.ok().body(attendances);
     }
 }
