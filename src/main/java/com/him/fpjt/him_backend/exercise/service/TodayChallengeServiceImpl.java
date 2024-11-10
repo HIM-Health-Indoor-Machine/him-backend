@@ -48,7 +48,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
 
     @Transactional
     @Override
-    public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto) throws Exception {
+    public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto){
         TodayChallenge todayChallenge = getTodayChallengeById(newTodayChallengeDto.getId());
         todayChallenge.setCnt(newTodayChallengeDto.getCnt());
         boolean isUpdated = todayChallengeDao.updateTodayChallenge(todayChallenge) > 0;
@@ -63,7 +63,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         return isUpdated;
     }
 
-    private void addAchievementExp(TodayChallenge todayChallenge, Challenge challenge) throws Exception {
+    private void addAchievementExp(TodayChallenge todayChallenge, Challenge challenge){
         int bonusExp = calculateAchievementBonusExp(todayChallenge.getChallengeId(), todayChallenge.getDate());
         if (bonusExp > 0) {
             userService.modifyUserExp(challenge.getUserId(), bonusExp);
