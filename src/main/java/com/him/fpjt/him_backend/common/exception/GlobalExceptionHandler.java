@@ -46,4 +46,10 @@ public class GlobalExceptionHandler {
         final ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST, e.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
     }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ExceptionDto> handleIllegalStateException(IllegalStateException e) {
+        log.error("잘못된 상태 : {}", e.getMessage(), e);
+        final ExceptionDto dto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
+    }
 }
