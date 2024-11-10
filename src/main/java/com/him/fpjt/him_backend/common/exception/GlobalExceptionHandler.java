@@ -52,4 +52,10 @@ public class GlobalExceptionHandler {
         final ExceptionDto dto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionDto> handleException(Exception e) {
+        log.error("서버 오류 발생 : {}", e.getMessage(), e);
+        final ExceptionDto dto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
+    }
 }
