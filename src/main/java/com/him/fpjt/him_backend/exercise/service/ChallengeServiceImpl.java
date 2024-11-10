@@ -21,22 +21,34 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Override
     @Transactional
-    public boolean createChallenge(Challenge challenge) {
-        return challengeDao.insertChallenge(challenge) > 0 ? true : false;
+    public void createChallenge(Challenge challenge) {
+        int result = challengeDao.insertChallenge(challenge);
+        if (result == 0) {
+            throw new IllegalStateException("챌린지 저장에 실패했습니다.");
+        }
     }
 
     @Override
     public List<Challenge> getChallengeByStatusAndUserId(long userId, ChallengeStatus status) {
-        return challengeDao.selectChallengesByStatusAndUserId(userId, status.name());
+        List<Challenge> challenges = challengeDao.selectChallengesByStatusAndUserId(userId,
+                status.name());
+        if (challenges.isEmpty()) {
+            throw new NoSuchElementException("챌린지가 없습니다.");
+        }
+        return challenges;
     }
 
     @Override
     public Challenge getChallengeDetail(long id) {
-        return challengeDao.selectChallenge(id);
+        Challenge challenge = challengeDao.selectChallenge(id);
+        if (challenge == null) {
+            throw new NoSuchElementException("일치하는 챌린지가 없습니다.");
+        }
+        return challenge;
     }
 
     @Override
-    public boolean modifyChallenge(long id, ChallengeDto challengeDto) {
+    public void modifyChallenge(long id, ChallengeDto challengeDto) {
         Challenge Challenge = findChallenge(id);
         modifyChallengeFields(challengeDto, Challenge);
 
@@ -44,7 +56,6 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (result == 0) {
             throw new IllegalStateException("챌린지 업데이트에 실패했습니다.");
         }
-        return true;
     }
 
     private static void modifyChallengeFields(ChallengeDto challengeDto, Challenge Challenge) {
@@ -64,10 +75,13 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Override
     @Transactional
-    public boolean removeChallenge(long id) {
+    public void removeChallenge(long id) {
         challengeDao.deleteTodayChallengeByChallengeId(id);
         log.info("delete todaychallenge by challengeId");
-        return challengeDao.deleteChallenge(id) > 0 ? true : false;
+        int result = challengeDao.deleteChallenge(id);
+        if (result == 0) {
+            throw new IllegalStateException("챌린지 삭제에 실패했습니다.");
+        }
     }
 
     @Override
