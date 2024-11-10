@@ -40,4 +40,10 @@ public class GlobalExceptionHandler {
         final ExceptionDto dto = new ExceptionDto(HttpStatus.NO_CONTENT, e.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(dto);
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionDto> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("잘못된 인자 전달 : {}", e.getMessage(), e);
+        final ExceptionDto dto = new ExceptionDto(HttpStatus.BAD_REQUEST, e.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
+    }
 }
