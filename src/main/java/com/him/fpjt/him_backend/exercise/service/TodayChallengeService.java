@@ -6,6 +6,6 @@ import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
 public interface TodayChallengeService {
     public void createTodayChallenge();
     public TodayChallenge getTodayChallengeById(long id);
-    public boolean modifyTodayChallenge(TodayChallengeDto todayChallengeDto) throws Exception;
+    public boolean modifyTodayChallenge(TodayChallengeDto todayChallengeDto);
     public void modifyUnachievementTodayChallenge() throws Exception;
 }

@@ -5,7 +5,6 @@ import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import com.him.fpjt.him_backend.exercise.dto.ChallengeDto;
 import com.him.fpjt.him_backend.exercise.service.ChallengeService;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,10 +27,8 @@ public class ChallengeController {
     }
     @PostMapping
     public ResponseEntity<String> createChallenge(@RequestBody Challenge challenge) {
-        boolean isSave = challengeService.createChallenge(challenge);
-        return isSave == true ?
-                ResponseEntity.status(HttpStatus.CREATED).build():
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("챌린지 저장에 실패했습니다.");
+        challengeService.createChallenge(challenge);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @GetMapping
     public ResponseEntity<?> getChallengeByStatusAndUserId(@RequestParam(value = "userId", defaultValue = "true") long userId,
@@ -40,38 +37,24 @@ public class ChallengeController {
         try {
             challengeStatus = ChallengeStatus.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 상태 값입니다.");
+            throw new IllegalArgumentException("잘못된 상태 값입니다.");
         }
         List<Challenge> challenges = challengeService.getChallengeByStatusAndUserId(userId, challengeStatus);
-        return challenges.isEmpty() ?
-                ResponseEntity.status(HttpStatus.NO_CONTENT).body("챌린지가 없습니다.") :
-                ResponseEntity.ok().body(challenges);
+        return ResponseEntity.ok().body(challenges);
     }
     @GetMapping("/{challengeId}")
     public ResponseEntity<?> getChallengeDetail(@PathVariable("challengeId") long id) {
         Challenge challenges = challengeService.getChallengeDetail(id);
-        return challenges != null ?
-                ResponseEntity.ok().body(challenges):
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body("일치하는 챌린지가 없습니다.");
+        return ResponseEntity.ok().body(challenges);
     }
     @PutMapping("/{challengeId}")
     public ResponseEntity<String> modifyChallenge(@PathVariable("challengeId") long id,
                                             @RequestBody ChallengeDto challenge) {
-        try {
-            challengeService.modifyChallenge(id, challenge);
-            ResponseEntity.ok().build();
-        } catch (NoSuchElementException e) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (IllegalStateException e) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-        return null;
+        challengeService.modifyChallenge(id, challenge);
+        return ResponseEntity.ok().build();
     }
     @DeleteMapping("/{challengeId}")
     public ResponseEntity<String> removeChallenge(@PathVariable("challengeId") long id) {
-        boolean isRemoved = challengeService.removeChallenge(id);
-        return isRemoved == true ?
-                ResponseEntity.ok().build() :
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("삭제할 챌린지가 없습니다.");
+        return ResponseEntity.ok().build();
     }
 }

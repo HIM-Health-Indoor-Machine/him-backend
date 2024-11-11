@@ -36,7 +36,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         for (Long challengeId : allChallengeId) {
             long todayChallengeId = todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, challengeId, LocalDate.now()));
             if (todayChallengeId <= 0) {
-                throw new RuntimeException("챌린지 생성에 실패했습니다.");
+                throw new IllegalStateException("챌린지 생성에 실패했습니다.");
             }
         }
     }
@@ -48,7 +48,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
 
     @Transactional
     @Override
-    public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto) throws Exception {
+    public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto){
         TodayChallenge todayChallenge = getTodayChallengeById(newTodayChallengeDto.getId());
         todayChallenge.setCnt(newTodayChallengeDto.getCnt());
         boolean isUpdated = todayChallengeDao.updateTodayChallenge(todayChallenge) > 0;
@@ -63,7 +63,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         return isUpdated;
     }
 
-    private void addAchievementExp(TodayChallenge todayChallenge, Challenge challenge) throws Exception {
+    private void addAchievementExp(TodayChallenge todayChallenge, Challenge challenge){
         int bonusExp = calculateAchievementBonusExp(todayChallenge.getChallengeId(), todayChallenge.getDate());
         if (bonusExp > 0) {
             userService.modifyUserExp(challenge.getUserId(), bonusExp);

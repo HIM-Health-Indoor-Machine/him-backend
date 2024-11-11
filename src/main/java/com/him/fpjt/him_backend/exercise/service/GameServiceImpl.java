@@ -63,7 +63,7 @@ public class GameServiceImpl implements GameService {
     private void updateUserExperience(long userId, long expPoints) {
         int expUpdateResult = userDao.updateUserExp(userId, expPoints);
         if (expUpdateResult == 0) {
-            throw new UnsupportedOperationException("사용자 경험치 업데이트에 실패했습니다.");
+            throw new IllegalStateException("사용자 경험치 업데이트에 실패했습니다.");
         }
     }
 

@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     public void modifyUserExp(long userId, long expPoints) {
         int updateResult = userDao.updateUserExp(userId, expPoints);
         if (updateResult == 0) {
-            throw new UnsupportedOperationException("사용자 경험치 업데이트에 실패했습니다.");
+            throw new IllegalStateException("사용자 경험치 업데이트에 실패했습니다.");
         }
     }
 

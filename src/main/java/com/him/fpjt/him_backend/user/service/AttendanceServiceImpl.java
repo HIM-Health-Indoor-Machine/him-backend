@@ -33,7 +33,7 @@ public class AttendanceServiceImpl implements AttendenceService{
 
     @Override
     @Transactional
-    public void addAttendanceExp(long userId) throws Exception {
+    public void addAttendanceExp(long userId){
         userService.modifyUserExp(userId, ExpPoints.DAILY_ATTENDANCE_EXP);
     }
 
