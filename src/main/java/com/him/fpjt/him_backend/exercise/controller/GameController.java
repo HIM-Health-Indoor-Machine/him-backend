@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/game")
+@CrossOrigin("*")
 public class GameController {
 
     private final GameService gameService;
@@ -18,9 +19,9 @@ public class GameController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createGame(@RequestBody Game game) {
-        gameService.createGame(game);
-        return ResponseEntity.ok("게임이 성공적으로 추가되었습니다.");
+    public ResponseEntity<Long> createGame(@RequestBody Game game) {
+        long gameId = gameService.createGame(game);
+        return ResponseEntity.ok(gameId);
     }
 
     @PutMapping

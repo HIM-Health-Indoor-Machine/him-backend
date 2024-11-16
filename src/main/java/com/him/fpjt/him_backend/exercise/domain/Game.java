@@ -1,16 +1,17 @@
 package com.him.fpjt.him_backend.exercise.domain;
 
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+
+import lombok.*;
 
 @Getter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
+@Setter
 public class Game {
     private long id;
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
     private ExerciseType type;
     private DifficultyLevel difficultyLevel;
     private boolean isAchieved;

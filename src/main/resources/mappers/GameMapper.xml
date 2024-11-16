@@ -5,7 +5,7 @@
 <mapper namespace="com.him.fpjt.him_backend.exercise.dao.GameDao">
 
     <!-- 새로운 게임을 삽입하는 SQL 구문 -->
-    <insert id="insertGame" parameterType="Game">
+    <insert id="insertGame" parameterType="Game" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO game (date, type, difficulty_level, is_achieved, user_id)
         VALUES (#{date}, #{type}, #{difficultyLevel}, false, #{userId})
     </insert>

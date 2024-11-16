@@ -23,11 +23,12 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void createGame(Game game) {
+    public long createGame(Game game) {
         int result = gameDao.insertGame(game);
         if (result == 0) {
             throw new IllegalStateException("게임 생성에 실패했습니다.");
         }
+        return game.getId();
     }
 
     @Override
