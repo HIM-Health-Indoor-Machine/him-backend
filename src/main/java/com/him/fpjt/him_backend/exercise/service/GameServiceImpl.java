@@ -33,16 +33,20 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void applyUserExp(long gameId) {
+    public long applyUserExp(long gameId) {
         Game currentGame = validateGameExists(gameId);
+
         long userId = currentGame.getUserId();
 
+        long expPoints = 0L;
         if (!checkForSimilarAchievements(currentGame, userId)) {
-            long expPoints = calculateExpPoints(currentGame.getDifficultyLevel());
+            expPoints = calculateExpPoints(currentGame.getDifficultyLevel());
             updateUserExperience(userId, expPoints);
         }
 
         updateGameAchievementStatus(gameId);
+
+        return expPoints;
     }
 
     private Game validateGameExists(long gameId) {

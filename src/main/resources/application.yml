@@ -19,6 +19,7 @@ mybatis:
   type-aliases-package: com.him.fpjt.him_backend.exercise.domain, com.him.fpjt.him_backend.user.domain, com.him.fpjt.him_backend.auth.domain
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
 ---
 spring:
   config:

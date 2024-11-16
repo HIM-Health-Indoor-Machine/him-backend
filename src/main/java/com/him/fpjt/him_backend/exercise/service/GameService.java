@@ -6,5 +6,5 @@ public interface GameService {
 
     long createGame(Game game);
 
-    void applyUserExp(long gameId);
+    long applyUserExp(long gameId);
 }
