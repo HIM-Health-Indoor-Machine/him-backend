@@ -23,25 +23,30 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public void createGame(Game game) {
+    public long createGame(Game game) {
         int result = gameDao.insertGame(game);
         if (result == 0) {
             throw new IllegalStateException("게임 생성에 실패했습니다.");
         }
+        return game.getId();
     }
 
     @Override
     @Transactional
-    public void applyUserExp(long gameId) {
+    public long applyUserExp(long gameId) {
         Game currentGame = validateGameExists(gameId);
+
         long userId = currentGame.getUserId();
 
+        long expPoints = 0L;
         if (!checkForSimilarAchievements(currentGame, userId)) {
-            long expPoints = calculateExpPoints(currentGame.getDifficultyLevel());
+            expPoints = calculateExpPoints(currentGame.getDifficultyLevel());
             updateUserExperience(userId, expPoints);
         }
 
         updateGameAchievementStatus(gameId);
+
+        return expPoints;
     }
 
     private Game validateGameExists(long gameId) {

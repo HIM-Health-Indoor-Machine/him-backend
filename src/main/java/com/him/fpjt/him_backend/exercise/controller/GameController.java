@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/game")
+@CrossOrigin("*")
 public class GameController {
 
     private final GameService gameService;
@@ -18,16 +19,16 @@ public class GameController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createGame(@RequestBody Game game) {
-        gameService.createGame(game);
-        return ResponseEntity.ok("게임이 성공적으로 추가되었습니다.");
+    public ResponseEntity<Long> createGame(@RequestBody Game game) {
+        long gameId = gameService.createGame(game);
+        return ResponseEntity.ok(gameId);
     }
 
     @PutMapping
-    public ResponseEntity<String> achieveGame(@RequestBody GameDto gameDto) {
+    public ResponseEntity<Object> achieveGame(@RequestBody GameDto gameDto) {
         if (gameDto.isAchieved()) {
-            gameService.applyUserExp(gameDto.getGameId());
-            return ResponseEntity.ok("조건에 따른 경험치 반영이 완료되었습니다.");
+            long expPoints = gameService.applyUserExp(gameDto.getGameId());
+            return ResponseEntity.ok(expPoints);
         } else {
             return ResponseEntity.ok("성취하지 않은 상태이므로 경험치가 반영되지 않았습니다.");
         }
