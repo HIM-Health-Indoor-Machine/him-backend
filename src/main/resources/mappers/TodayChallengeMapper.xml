@@ -9,6 +9,9 @@
   <select id="selectTodayChallengeById" parameterType="long" resultType="TodayChallenge">
     SELECT * FROM today_challenge WHERE id = #{id}
   </select>
+  <select id="selectTodayChallengeByChallengeIdAndDate" parameterType="map" resultType="TodayChallenge">
+    SELECT * FROM today_challenge WHERE challenge_id = #{challengeId} and date = #{date}
+  </select>
   <update id="updateTodayChallenge" parameterType="TodayChallenge">
     UPDATE today_challenge SET cnt = #{cnt} WHERE id = #{id}
   </update>
