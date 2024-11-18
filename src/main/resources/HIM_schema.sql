@@ -22,21 +22,22 @@ SELECT * FROM user;
 
 CREATE TABLE `challenge`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `title` VARCHAR(255) NOT NULL,
     `status` VARCHAR(255) NOT NULL,
     `type` VARCHAR(255) NOT NULL,
     `start_dt` DATE NOT NULL,
     `end_dt` DATE NOT NULL,
     `goal_cnt` BIGINT NOT NULL,
-    `achieve_cnt` INT NOT NULL,
+    `achieved_cnt` INT NOT NULL,
     `user_id` BIGINT UNSIGNED NOT NULL,
     CONSTRAINT `challenge_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 );
 -- challenge 객체에 목업 데이터 삽입
-INSERT INTO `challenge` (`status`, `type`, `start_dt`, `end_dt`, `goal_cnt`, `achieve_cnt`, `user_id`)
+INSERT INTO `challenge` (`title`, `status`, `type`, `start_dt`, `end_dt`, `goal_cnt`, `achieved_cnt`, `user_id`)
 VALUES 
-    ('PENDING', 'SQUAT', '2024-01-01', '2024-01-31', 50, 1000, 1),
-    ('ONGOING', 'PUSHUP', '2024-02-01', '2024-02-28', 30, 989, 2),
-    ('DONE', 'SQUAT', '2024-03-01', '2024-03-31', 20, 782, 3);
+    ('제목1', 'ONGOING', 'SQUAT', '2024-01-01', '2024-01-31', 50, 1000, 1),
+    ('제목1', 'ONGOING', 'PUSHUP', '2024-02-01', '2024-02-28', 30, 989, 1),
+    ('제목1', 'DONE', 'SQUAT', '2024-03-01', '2024-03-31', 20, 782, 1);
 SELECT * FROM challenge;
 
 CREATE TABLE `game`(
