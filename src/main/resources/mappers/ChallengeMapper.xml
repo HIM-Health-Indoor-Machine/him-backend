@@ -3,8 +3,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.him.fpjt.him_backend.exercise.dao.ChallengeDao">
   <insert id="insertChallenge" parameterType="Challenge">
-    INSERT INTO challenge (status, type, start_dt, end_dt, goal_cnt, achieve_cnt, user_id)
-        VALUES (#{status}, #{type}, #{startDt}, #{endDt}, #{goalCnt}, #{achievedCnt}, #{userId})
+    INSERT INTO challenge (title, status, type, start_dt, end_dt, goal_cnt, achieve_cnt, user_id)
+        VALUES (#{title}, #{status}, #{type}, #{startDt}, #{endDt}, #{goalCnt}, #{achievedCnt}, #{userId})
   </insert>
   <select id="selectChallengesByStatusAndUserId" parameterType="map" resultType="Challenge">
     SELECT * FROM challenge
