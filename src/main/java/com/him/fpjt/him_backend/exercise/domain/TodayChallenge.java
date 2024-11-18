@@ -3,11 +3,13 @@ package com.him.fpjt.him_backend.exercise.domain;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class TodayChallenge {
     private long id;
     private long cnt;
