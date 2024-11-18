@@ -7,6 +7,7 @@ import com.him.fpjt.him_backend.exercise.service.ChallengeService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/challenge")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ChallengeController {
     private ChallengeService challengeService;
 
@@ -55,6 +57,7 @@ public class ChallengeController {
     }
     @DeleteMapping("/{challengeId}")
     public ResponseEntity<String> removeChallenge(@PathVariable("challengeId") long id) {
+        challengeService.removeChallenge(id);
         return ResponseEntity.ok().build();
     }
 }

@@ -59,6 +59,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     private static void modifyChallengeFields(ChallengeDto challengeDto, Challenge Challenge) {
+        Challenge.updateTitle(Challenge.getTitle());
         Challenge.updateType(challengeDto.getType());
         Challenge.updateStartDt(challengeDto.getStartDt());
         Challenge.updateEndDt(challengeDto.getEndDt());

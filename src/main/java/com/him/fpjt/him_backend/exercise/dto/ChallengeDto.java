@@ -1,7 +1,6 @@
 package com.him.fpjt.him_backend.exercise.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import com.him.fpjt.him_backend.exercise.domain.ExerciseType;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
