@@ -98,3 +98,13 @@ INSERT INTO verification_code (email, code, issued_at) VALUES
     ('user3@example.com', 'K1L2M3N4O5', '2024-11-08 11:45:20');
 
 select * from verification_code;
+
+CREATE TABLE refresh_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(512) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    expiry_date DATETIME NOT NULL,
+    UNIQUE(token)
+);
+
+select * from refresh_tokens;
