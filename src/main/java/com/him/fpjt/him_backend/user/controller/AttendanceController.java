@@ -4,8 +4,6 @@ import com.him.fpjt.him_backend.user.domain.Attendance;
 import com.him.fpjt.him_backend.user.service.AttendenceService;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
