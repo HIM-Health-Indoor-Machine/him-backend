@@ -3,13 +3,14 @@ package com.him.fpjt.him_backend.exercise.controller;
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
 import com.him.fpjt.him_backend.exercise.service.TodayChallengeService;
+import java.time.LocalDate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,9 +22,11 @@ public class TodayChallengeController {
     public TodayChallengeController(TodayChallengeService todayChallengeService) {
         this.todayChallengeService = todayChallengeService;
     }
-    @GetMapping("{todayChallengeId}")
-    public ResponseEntity<Object> getTodayChallenge(@PathVariable("todayChallengeId") long id) {
-        TodayChallenge todayChallenge = todayChallengeService.getTodayChallengeById(id);
+    @GetMapping
+    public ResponseEntity<Object> getTodayChallenge(@RequestParam(value = "challengeId") long challengeId,
+            @RequestParam(value = "date") LocalDate date) {
+        TodayChallenge todayChallenge = todayChallengeService.getTodayChallengeByChallengeIdAndDate(challengeId, date);
+        System.out.println(todayChallenge.toString());
         return ResponseEntity.ok().body(todayChallenge);
     }
     @PutMapping
