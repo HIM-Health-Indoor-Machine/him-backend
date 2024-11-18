@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/challenge")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ChallengeController {
     private ChallengeService challengeService;
 
