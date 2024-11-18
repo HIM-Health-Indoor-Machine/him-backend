@@ -46,6 +46,12 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
                 .orElseThrow(() -> new NoSuchElementException("해당 ID의 오늘의 챌린지가 존재하지 않습니다."));
     }
 
+    @Override
+    public TodayChallenge getTodayChallengeByChallengeIdAndDate(long challengeId, LocalDate date) {
+        return Optional.ofNullable(todayChallengeDao.selectTodayChallengeByChallengeIdAndDate(challengeId, date))
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 오늘의 챌린지가 존재하지 않습니다."));
+    }
+
     @Transactional
     @Override
     public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto){

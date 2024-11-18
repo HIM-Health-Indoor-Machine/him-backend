@@ -61,14 +61,15 @@ CREATE TABLE `today_challenge`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `cnt` BIGINT NOT NULL,
     `challenge_id` BIGINT UNSIGNED NOT NULL,
+    `date` DATE NOT NULL,
     CONSTRAINT `today_challenge_challenge_id_foreign` FOREIGN KEY (`challenge_id`) REFERENCES `challenge` (`id`)
 );
 -- today_challenge 객체에 목업 데이터 삽입
-INSERT INTO `today_challenge` (`cnt`, `challenge_id`)
+INSERT INTO `today_challenge` (`cnt`, `challenge_id`, `date`)
 VALUES 
-    (15, 1),
-    (10, 2),
-    (21, 3);
+    (15, 1, '2024-11-18'),
+    (10, 2, '2024-04-02'),
+    (21, 3, '2024-04-03');
 SELECT * FROM today_challenge;
 
 CREATE TABLE `attendance`(
