@@ -1,10 +1,9 @@
 package com.him.fpjt.him_backend.exercise.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +38,7 @@ public class ChallegeServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockChallenge = new Challenge(
+                "제목1",
                 ChallengeStatus.ONGOING,
                 ExerciseType.SQUAT,
                 LocalDate.now(),
@@ -57,17 +57,23 @@ public class ChallegeServiceImplTest {
     @Test
     @DisplayName("챌린지 생성 성공 시에 true를 반환한다.")
     public void createChallenge_success() {
-        Challenge challenge = new Challenge(ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now(), LocalDate.now(), 10L, 1L);
+        Challenge challenge = new Challenge("하루 10분 스쿼트", ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now(), LocalDate.now(), 10L, 1L);
+
         when(challengeDao.insertChallenge(challenge)).thenReturn(1);
-        assertTrue(challengeService.createChallenge(challenge));
+
+        assertDoesNotThrow(() -> challengeService.createChallenge(challenge));
+        verify(challengeDao).insertChallenge(challenge);
     }
 
     @Test
     @DisplayName("챌린지 생성 실패 시에 false를 반환한다.")
     public void createChallenge_fail() {
-        Challenge challenge = new Challenge(ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now(), LocalDate.now(), 10L, 1L);
+        Challenge challenge = new Challenge("하루 10분 스쿼트", ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now(), LocalDate.now(), 10L, 1L);
+
         when(challengeDao.insertChallenge(challenge)).thenReturn(0);
-        assertFalse(challengeService.createChallenge(challenge));
+
+        assertThrows(IllegalStateException.class, () -> challengeService.createChallenge(challenge));
+        verify(challengeDao).insertChallenge(challenge);
     }
 
     @Test
@@ -99,14 +105,12 @@ public class ChallegeServiceImplTest {
     void modifyChallenge_successfulUpdate() {
         long challengeId = 1L;
         ChallengeDto challengeDto = new ChallengeDto(ExerciseType.SQUAT, LocalDate.now(), LocalDate.now().plusDays(30), 50);
-        Challenge challenge = new Challenge(challengeId, ChallengeStatus.ONGOING, ExerciseType.PUSHUP, LocalDate.now().minusDays(10), LocalDate.now().plusDays(31), 30, 4, 1L);
+        Challenge challenge = new Challenge(challengeId, "하루 10분 스쿼트", ChallengeStatus.ONGOING, ExerciseType.PUSHUP, LocalDate.now().minusDays(10), LocalDate.now().plusDays(31), 30, 4, 1L);
 
-        when(challengeService.getChallengeDetail(challengeId)).thenReturn(challenge);
+        when(challengeDao.selectChallenge(challengeId)).thenReturn(challenge);
         when(challengeDao.updateChallenge(any(Challenge.class))).thenReturn(1);
 
-        boolean result = challengeService.modifyChallenge(challengeId, challengeDto);
-
-        assertTrue(result);
+        assertDoesNotThrow(() -> challengeService.modifyChallenge(challengeId, challengeDto));
         verify(challengeDao).updateChallenge(any(Challenge.class));
     }
 
@@ -116,7 +120,7 @@ public class ChallegeServiceImplTest {
         long challengeId = 1L;
         ChallengeDto challengeDto = new ChallengeDto(ExerciseType.SQUAT, LocalDate.now(), LocalDate.now().plusDays(10), 100);
 
-        when(challengeService.getChallengeDetail(challengeId)).thenReturn(null);
+        when(challengeDao.selectChallenge(challengeId)).thenReturn(null);
 
         assertThrows(NoSuchElementException.class, () -> {
             challengeService.modifyChallenge(challengeId, challengeDto);
@@ -129,9 +133,9 @@ public class ChallegeServiceImplTest {
         long challengeId = 1L;
         ChallengeDto challengeDto = new ChallengeDto(ExerciseType.PUSHUP, LocalDate.now(),
                 LocalDate.now().plusDays(10), 100);
-        Challenge challenge = new Challenge(challengeId, ChallengeStatus.ONGOING, ExerciseType.PUSHUP, LocalDate.now().minusDays(10), LocalDate.now().plusDays(31), 30, 4, 1L);
+        Challenge challenge = new Challenge(challengeId, "하루 10분 푸쉬업", ChallengeStatus.ONGOING, ExerciseType.PUSHUP, LocalDate.now().minusDays(10), LocalDate.now().plusDays(31), 30, 4, 1L);
 
-        when(challengeService.getChallengeDetail(challengeId)).thenReturn(challenge);
+        when(challengeDao.selectChallenge(challengeId)).thenReturn(challenge);
         when(challengeDao.updateChallenge(any(Challenge.class))).thenReturn(0);
 
         assertThrows(IllegalStateException.class, () -> {
@@ -144,7 +148,11 @@ public class ChallegeServiceImplTest {
     public void removeChallenge_success() {
         when(challengeDao.deleteTodayChallengeByChallengeId(1L)).thenReturn(1);
         when(challengeDao.deleteChallenge(1L)).thenReturn(1);
-        assertTrue(challengeService.removeChallenge(1L));
+
+        assertDoesNotThrow(() -> challengeService.removeChallenge(1L));
+
+        verify(challengeDao).deleteTodayChallengeByChallengeId(1L);
+        verify(challengeDao).deleteChallenge(1L);
     }
 
     @Test
@@ -152,7 +160,8 @@ public class ChallegeServiceImplTest {
     public void removeChallenge_fail() {
         when(challengeDao.deleteTodayChallengeByChallengeId(1L)).thenReturn(1);
         when(challengeDao.deleteChallenge(1L)).thenReturn(0);
-        assertFalse(challengeService.removeChallenge(1L));
+
+        assertThrows(IllegalStateException.class, () -> challengeService.removeChallenge(1L));
     }
 
     @Test
