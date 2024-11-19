@@ -26,7 +26,6 @@ public class TodayChallengeController {
     public ResponseEntity<Object> getTodayChallenge(@RequestParam(value = "challengeId") long challengeId,
             @RequestParam(value = "date") LocalDate date) {
         TodayChallenge todayChallenge = todayChallengeService.getTodayChallengeByChallengeIdAndDate(challengeId, date);
-        System.out.println(todayChallenge.toString());
         return ResponseEntity.ok().body(todayChallenge);
     }
     @PutMapping
