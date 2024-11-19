@@ -30,6 +30,12 @@ public class TodayChallengeController {
         TodayChallenge todayChallenge = todayChallengeService.getTodayChallengeByChallengeIdAndDate(challengeId, date);
         return ResponseEntity.ok().body(todayChallenge);
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<Object> getTodayChallenges(@RequestParam(value = "userId") long userId, @RequestParam(value = "date") LocalDate date) {
+        List<TodayChallenge> todayChallenges = todayChallengeService.getTodayChallengeByUserIdAndDate(userId, date);
+        return ResponseEntity.ok().body(todayChallenges);
+    }
     @PutMapping
     public ResponseEntity<Object> modifyTodayChallenge(@RequestBody TodayChallengeDto todayChallengeDto) {
         todayChallengeService.modifyTodayChallenge(todayChallengeDto);

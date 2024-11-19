@@ -9,6 +9,7 @@ public interface TodayChallengeService {
     public void createTodayChallenge();
     public TodayChallenge getTodayChallengeById(long id);
     public TodayChallenge getTodayChallengeByChallengeIdAndDate(long challengeId, LocalDate date);
+    public List<TodayChallenge> getTodayChallengeByUserIdAndDate(long userId, LocalDate date);
     public boolean modifyTodayChallenge(TodayChallengeDto todayChallengeDto);
     public void modifyUnachievementTodayChallenge() throws Exception;
     List<TodayChallenge> getMonthlyTodayChallenge(long userId, int year, int month);
