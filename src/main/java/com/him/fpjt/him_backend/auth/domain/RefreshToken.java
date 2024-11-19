@@ -16,4 +16,10 @@ public class RefreshToken {
     private String token;
     private String email;
     private LocalDateTime expiryDate;
+
+    public RefreshToken(String token, String email, LocalDateTime expiryDate){
+        this.token = token;
+        this.email = email;
+        this.expiryDate = expiryDate;
+    }
 }
