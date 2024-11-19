@@ -2,16 +2,9 @@ package com.him.fpjt.him_backend.auth.controller;
 
 import com.him.fpjt.him_backend.auth.dto.*;
 import com.him.fpjt.him_backend.auth.service.AuthService;
-import com.him.fpjt.him_backend.common.util.JwtUtil;
-import com.him.fpjt.him_backend.user.domain.User;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.annotation.Validated;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,47 +14,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-
 @Validated
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
 
-    public AuthController(AuthService authService, AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody SignupDto signupDto) {
-        authService.registerUser(signupDto);
+    @PostMapping("/signup")
+    public ResponseEntity<String> signupUser(@Valid @RequestBody SignupDto signupDto) {
+        authService.signupUser(signupDto);
         return ResponseEntity.ok("회원가입이 성공적으로 완료되었습니다.");
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest authenticationRequest) {
-        System.out.println("Attempting to authenticate: " + authenticationRequest.getEmail());
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getEmail(),
-                        authenticationRequest.getPassword()
-                )
-        );
-
-        String accessToken = jwtUtil.generateToken(authenticationRequest.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(authenticationRequest.getEmail());
-
-        authService.saveRefreshToken(refreshToken, authenticationRequest.getEmail(), LocalDateTime.now().plusDays(30));
-
-        User user = authService.findUserByEmail(authenticationRequest.getEmail());
-        Long userId = user.getId();
-
-        return ResponseEntity.ok(new AuthenticationResponse(accessToken, authenticationRequest.getEmail(), userId, "로그인 성공"));
+        AuthenticationResponse response = authService.login(authenticationRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")

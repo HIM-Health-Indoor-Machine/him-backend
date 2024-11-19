@@ -3,6 +3,7 @@ package com.him.fpjt.him_backend.auth.service;
 import com.him.fpjt.him_backend.auth.dao.RefreshTokenDao;
 import com.him.fpjt.him_backend.auth.dao.VerificationCodeDao;
 import com.him.fpjt.him_backend.auth.domain.RefreshToken;
+import com.him.fpjt.him_backend.auth.dto.AuthenticationRequest;
 import com.him.fpjt.him_backend.auth.dto.SignupDto;
 import com.him.fpjt.him_backend.common.constants.EmailTemplates;
 import com.him.fpjt.him_backend.common.util.CodeGenerator;
@@ -11,12 +12,16 @@ import com.him.fpjt.him_backend.common.util.JwtUtil;
 import com.him.fpjt.him_backend.user.dao.UserDao;
 import com.him.fpjt.him_backend.auth.domain.VerificationCode;
 import com.him.fpjt.him_backend.auth.dto.VerificationCodeDto;
+import com.him.fpjt.him_backend.auth.dto.AuthenticationResponse;
+import org.springframework.security.authentication.AuthenticationManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 import com.him.fpjt.him_backend.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,20 +35,45 @@ public class AuthServiceImpl implements AuthService {
     private final CodeGenerator codeGenerator;
     private final VerificationCodeDao verificationCodeDao;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     public AuthServiceImpl(UserDao userDao, RefreshTokenDao refreshTokenDao, EmailSender emailSender, CodeGenerator codeGenerator,
-            VerificationCodeDao verificationCodeDao, PasswordEncoder passwordEncoder) {
+            VerificationCodeDao verificationCodeDao, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.userDao = userDao;
         this.refreshTokenDao = refreshTokenDao;
         this.emailSender = emailSender;
         this.codeGenerator = codeGenerator;
         this.verificationCodeDao = verificationCodeDao;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
     }
 
     @Transactional
     @Override
-    public void registerUser(SignupDto signupDto) {
+    public AuthenticationResponse login(AuthenticationRequest authenticationRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authenticationRequest.getEmail(),
+                        authenticationRequest.getPassword()
+                )
+        );
+
+        String accessToken = jwtUtil.generateToken(authenticationRequest.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(authenticationRequest.getEmail());
+
+        saveRefreshToken(refreshToken, authenticationRequest.getEmail(), LocalDateTime.now().plusDays(30));
+
+        User user = userDao.selectUserByEmail(authenticationRequest.getEmail());
+        Long userId = user.getId();
+
+        return new AuthenticationResponse(accessToken, authenticationRequest.getEmail(), userId, "로그인 성공");
+    }
+
+    @Transactional
+    @Override
+    public void signupUser(SignupDto signupDto) {
         if (userDao.existsByEmail(signupDto.getEmail())) {
             throw new IllegalStateException("이미 존재하는 이메일입니다.");
         }
@@ -62,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public void saveRefreshToken(String refreshToken, String userEmail, LocalDateTime expiryDate) {
-        RefreshToken tokenEntity = new RefreshToken(0, refreshToken, userEmail, expiryDate);
+        RefreshToken tokenEntity = new RefreshToken(refreshToken, userEmail, expiryDate);
         refreshTokenDao.saveRefreshToken(tokenEntity);
     }
 
