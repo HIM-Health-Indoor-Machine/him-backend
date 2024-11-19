@@ -36,7 +36,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/attendance/**").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
                         .anyRequest().authenticated()
-                        // .anyRequest().permitAll() - 디버깅 용도
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
