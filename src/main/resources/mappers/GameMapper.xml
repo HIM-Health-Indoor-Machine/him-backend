@@ -29,4 +29,9 @@
         SET is_achieved = true
         WHERE id = #{id}
     </update>
+    <select id="selectGameByUserIdAndDateRange" parameterType="map" resultType="Game">
+        SELECT * FROM game
+        WHERE user_id = #{userId}
+          AND date BETWEEN #{startOfMonth} AND #{endOfMonth}
+    </select>
 </mapper>
