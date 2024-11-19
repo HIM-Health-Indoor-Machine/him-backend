@@ -34,7 +34,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
     public void createTodayChallenge() {
         List<Long> allChallengeId = challengeService.getAllChallengeId();
         for (Long challengeId : allChallengeId) {
-            long todayChallengeId = todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, challengeId, LocalDate.now()));
+            long todayChallengeId = todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, challengeId, LocalDate.now(), false));
             if (todayChallengeId <= 0) {
                 throw new IllegalStateException("챌린지 생성에 실패했습니다.");
             }
@@ -65,6 +65,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
             challengeService.modifyChallengeAchieveCnt(todayChallenge.getChallengeId());
 
             addAchievementExp(todayChallenge, challenge);
+            todayChallengeDao.updateIsAchieved(todayChallenge.getId());
         }
         return isUpdated;
     }
