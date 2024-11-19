@@ -3,7 +3,9 @@ package com.him.fpjt.him_backend.auth;
 import com.him.fpjt.him_backend.auth.dao.RefreshTokenDao;
 import com.him.fpjt.him_backend.auth.dao.VerificationCodeDao;
 import com.him.fpjt.him_backend.auth.domain.RefreshToken;
+import com.him.fpjt.him_backend.auth.dto.AuthenticationRequest;
 import com.him.fpjt.him_backend.auth.dto.SignupDto;
+import com.him.fpjt.him_backend.auth.dto.AuthenticationResponse;
 import com.him.fpjt.him_backend.auth.service.AuthServiceImpl;
 import com.him.fpjt.him_backend.common.util.CodeGenerator;
 import com.him.fpjt.him_backend.common.util.EmailSender;
@@ -12,6 +14,9 @@ import com.him.fpjt.him_backend.user.dao.UserDao;
 import com.him.fpjt.him_backend.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -24,65 +29,78 @@ class AuthServiceImplTest {
     private AuthServiceImpl authService;
     private UserDao userDao;
     private RefreshTokenDao refreshTokenDao;
+    private VerificationCodeDao verificationCodeDao;
     private EmailSender emailSender;
     private CodeGenerator codeGenerator;
-    private VerificationCodeDao verificationCodeDao;
     private PasswordEncoder passwordEncoder;
+    private JwtUtil jwtUtil;
+    private AuthenticationManager authenticationManager;
 
     @BeforeEach
     void setUp() {
         userDao = mock(UserDao.class);
         refreshTokenDao = mock(RefreshTokenDao.class);
+        verificationCodeDao = mock(VerificationCodeDao.class);
         emailSender = mock(EmailSender.class);
         codeGenerator = mock(CodeGenerator.class);
-        verificationCodeDao = mock(VerificationCodeDao.class);
         passwordEncoder = mock(PasswordEncoder.class);
+        jwtUtil = mock(JwtUtil.class);
+        authenticationManager = mock(AuthenticationManager.class);
 
-        authService = new AuthServiceImpl(userDao, refreshTokenDao, emailSender, codeGenerator, verificationCodeDao, passwordEncoder);
+        authService = new AuthServiceImpl(userDao, refreshTokenDao, emailSender, codeGenerator,
+                verificationCodeDao, passwordEncoder, jwtUtil, authenticationManager);
     }
 
     @Test
-    void testRegisterUser_Success() {
+    void testLogin_Success() {
+        AuthenticationRequest request = new AuthenticationRequest("test@example.com", "password");
+        Authentication authentication = mock(Authentication.class);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(jwtUtil.generateToken(request.getEmail())).thenReturn("accessToken");
+        when(jwtUtil.generateRefreshToken(request.getEmail())).thenReturn("refreshToken");
+        when(userDao.selectUserByEmail(request.getEmail())).thenReturn(new User(1L, "testUser", "test@example.com", "password", null, null, 0L));
+
+        AuthenticationResponse response = authService.login(request);
+
+        assertNotNull(response);
+        assertEquals("accessToken", response.getJwtToken());
+        assertEquals("test@example.com", response.getEmail());
+        assertEquals(1L, response.getUserId());
+        assertEquals("로그인 성공", response.getMessage());
+
+        verify(refreshTokenDao, times(1)).saveRefreshToken(any(RefreshToken.class));
+    }
+
+    @Test
+    void testSignupUser_Success() {
         SignupDto signupDto = new SignupDto("testUser", "test@example.com", "Password123!");
 
         when(userDao.existsByEmail(signupDto.getEmail())).thenReturn(false);
         when(userDao.existsDuplicatedNickname(signupDto.getNickname())).thenReturn(false);
         when(passwordEncoder.encode(signupDto.getPassword())).thenReturn("encodedPassword");
 
-        authService.registerUser(signupDto);
+        authService.signupUser(signupDto);
 
         verify(userDao, times(1)).saveUser(any(User.class));
     }
 
     @Test
-    void testRegisterUser_EmailAlreadyExists() {
+    void testSignupUser_EmailAlreadyExists() {
         SignupDto signupDto = new SignupDto("testUser", "test@example.com", "Password123!");
 
         when(userDao.existsByEmail(signupDto.getEmail())).thenReturn(true);
 
-        IllegalStateException thrown = assertThrows(IllegalStateException.class, () -> {
-            authService.registerUser(signupDto);
-        });
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> authService.signupUser(signupDto));
 
-        assertEquals("이미 존재하는 이메일입니다.", thrown.getMessage());
+        assertEquals("이미 존재하는 이메일입니다.", exception.getMessage());
         verify(userDao, never()).saveUser(any(User.class));
-    }
-
-    @Test
-    void testSaveRefreshToken() {
-        String email = "test@example.com";
-        String token = "refreshToken";
-        LocalDateTime expiryDate = LocalDateTime.now().plusDays(30);
-
-        authService.saveRefreshToken(token, email, expiryDate);
-
-        verify(refreshTokenDao, times(1)).saveRefreshToken(any(RefreshToken.class));
     }
 
     @Test
     void testFindRefreshTokenByEmail() {
         String email = "test@example.com";
-        RefreshToken refreshToken = new RefreshToken(1L, "refreshToken", email, LocalDateTime.now().plusDays(1));
+        RefreshToken refreshToken = new RefreshToken("refreshToken", email, LocalDateTime.now().plusDays(30));
 
         when(refreshTokenDao.findRefreshTokenByEmail(email)).thenReturn(refreshToken);
 
@@ -90,7 +108,6 @@ class AuthServiceImplTest {
 
         assertNotNull(result);
         assertEquals(email, result.getEmail());
-        verify(refreshTokenDao, times(1)).findRefreshTokenByEmail(email);
     }
 
     @Test
@@ -101,5 +118,28 @@ class AuthServiceImplTest {
 
         verify(refreshTokenDao, times(1)).deleteByUserEmail(email);
     }
-}
 
+    @Test
+    void testFindUserByEmail_Success() {
+        String email = "test@example.com";
+        User user = new User(1L, "testUser", email, "password", null, null, 0L);
+
+        when(userDao.selectUserByEmail(email)).thenReturn(user);
+
+        User result = authService.findUserByEmail(email);
+
+        assertNotNull(result);
+        assertEquals(email, result.getEmail());
+    }
+
+    @Test
+    void testFindUserByEmail_NotFound() {
+        String email = "nonexistent@example.com";
+
+        when(userDao.selectUserByEmail(email)).thenReturn(null);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> authService.findUserByEmail(email));
+
+        assertEquals("해당 이메일을 가진 사용자가 없습니다.", exception.getMessage());
+    }
+}
