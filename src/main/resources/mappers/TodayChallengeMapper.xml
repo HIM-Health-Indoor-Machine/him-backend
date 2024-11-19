@@ -12,6 +12,13 @@
   <select id="selectTodayChallengeByChallengeIdAndDate" parameterType="map" resultType="TodayChallenge">
     SELECT * FROM today_challenge WHERE challenge_id = #{challengeId} and date = #{date}
   </select>
+  <select id="selectTodayChallengeByUserIdAndDate" parameterType="map" resultType="TodayChallenge">
+    SELECT tc.*
+    FROM today_challenge tc
+           JOIN challenge c ON tc.challenge_id = c.id
+    WHERE c.user_id = #{userId}
+      AND tc.date = #{date}
+  </select>
   <update id="updateTodayChallenge" parameterType="TodayChallenge">
     UPDATE today_challenge SET cnt = #{cnt} WHERE id = #{id}
   </update>
