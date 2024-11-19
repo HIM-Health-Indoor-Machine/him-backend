@@ -7,6 +7,7 @@ import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
 import com.him.fpjt.him_backend.user.service.UserService;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -102,5 +103,16 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         for (TodayChallenge unachievedTodayChallenge : unachievedTodayChallenges) {
             userService.modifyUserExp(challengeService.getChallengeDetail(unachievedTodayChallenge.getChallengeId()).getUserId(), ExpPoints.DAILY_PENALTY_EXP);
         }
+    }
+
+    @Override
+    public List<TodayChallenge> getMonthlyTodayChallenge(long userId, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        List<TodayChallenge> todayChallenges = todayChallengeDao.selectTodayChallengeByUserIdAndDateRange(
+                userId, yearMonth.atDay(1), yearMonth.atEndOfMonth());
+        if (todayChallenges == null || todayChallenges.isEmpty()) {
+            throw new NoSuchElementException("해당 회원의 오늘의 챌린지 기록이 존재하지 않습니다.");
+        }
+        return todayChallenges;
     }
 }
