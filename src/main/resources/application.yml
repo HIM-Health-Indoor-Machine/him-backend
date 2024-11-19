@@ -14,6 +14,12 @@ spring:
           starttls.enable: true
         debug: true
 
+jwt:
+  secret: ${SECRET_KEY}
+  expiration: ${JWT_EXPIRATION}
+refresh:
+  expiration: ${REFRESH_EXPIRATION}
+
 mybatis:
   mapper-locations: mappers/*.xml
   type-aliases-package: com.him.fpjt.him_backend.exercise.domain, com.him.fpjt.him_backend.user.domain, com.him.fpjt.him_backend.auth.domain
