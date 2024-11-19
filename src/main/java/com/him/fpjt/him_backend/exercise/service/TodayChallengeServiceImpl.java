@@ -7,6 +7,7 @@ import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
 import com.him.fpjt.him_backend.user.service.UserService;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
     public void createTodayChallenge() {
         List<Long> allChallengeId = challengeService.getAllChallengeId();
         for (Long challengeId : allChallengeId) {
-            long todayChallengeId = todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, challengeId, LocalDate.now()));
+            long todayChallengeId = todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, challengeId, LocalDate.now(), false));
             if (todayChallengeId <= 0) {
                 throw new IllegalStateException("챌린지 생성에 실패했습니다.");
             }
@@ -52,6 +53,12 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
                 .orElseThrow(() -> new NoSuchElementException("해당 ID의 오늘의 챌린지가 존재하지 않습니다."));
     }
 
+    @Override
+    public List<TodayChallenge> getTodayChallengeByUserIdAndDate(long userId, LocalDate date) {
+        return Optional.ofNullable(todayChallengeDao.selectTodayChallengeByUserIdAndDate(userId, date))
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 오늘의 챌린지가 존재하지 않습니다."));
+    }
+
     @Transactional
     @Override
     public boolean modifyTodayChallenge(TodayChallengeDto newTodayChallengeDto){
@@ -65,6 +72,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
             challengeService.modifyChallengeAchieveCnt(todayChallenge.getChallengeId());
 
             addAchievementExp(todayChallenge, challenge);
+            todayChallengeDao.updateIsAchieved(todayChallenge.getId());
         }
         return isUpdated;
     }
@@ -101,5 +109,16 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
         for (TodayChallenge unachievedTodayChallenge : unachievedTodayChallenges) {
             userService.modifyUserExp(challengeService.getChallengeDetail(unachievedTodayChallenge.getChallengeId()).getUserId(), ExpPoints.DAILY_PENALTY_EXP);
         }
+    }
+
+    @Override
+    public List<TodayChallenge> getMonthlyTodayChallenge(long userId, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        List<TodayChallenge> todayChallenges = todayChallengeDao.selectTodayChallengeByUserIdAndDateRange(
+                userId, yearMonth.atDay(1), yearMonth.atEndOfMonth());
+        if (todayChallenges == null || todayChallenges.isEmpty()) {
+            throw new NoSuchElementException("해당 회원의 오늘의 챌린지 기록이 존재하지 않습니다.");
+        }
+        return todayChallenges;
     }
 }

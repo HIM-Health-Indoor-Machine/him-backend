@@ -50,7 +50,8 @@ public class ChallegeServiceImplTest {
                 mockChallenge.getId(),
                 10L,
                 1,
-                LocalDate.now()
+                LocalDate.now(),
+                true
         );
     }
 

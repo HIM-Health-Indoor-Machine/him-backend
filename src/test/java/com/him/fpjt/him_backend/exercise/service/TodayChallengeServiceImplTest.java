@@ -72,7 +72,7 @@ public class TodayChallengeServiceImplTest {
     @Test
     @DisplayName("오늘의 챌린지가 성공적으로 조회될 경우, 조회 결과를 반환한다.")
     void getTodayChallengeById_success() {
-        TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, 1L, LocalDate.now());
+        TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, 1L, LocalDate.now(), true);
         when(todayChallengeDao.selectTodayChallengeById(1L)).thenReturn(todayChallenge);
 
         TodayChallenge result = todayChallengeService.getTodayChallengeById(1L);
@@ -94,7 +94,7 @@ public class TodayChallengeServiceImplTest {
     @DisplayName("오늘의 챌린지를 달성할 경우, 경험치 5EXP를 추가한다.")
     void modifyTodayChallenge_getDailyExp() throws Exception {
         Challenge challenge = new Challenge(1L, "제목1",ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0,1L);
-        TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, 1L, LocalDate.now());
+        TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, 1L, LocalDate.now(), true);
         TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, 1L, LocalDate.now());
 
         when(todayChallengeDao.selectTodayChallengeById(todayChallengeDto.getId())).thenReturn(todayChallenge);
@@ -112,7 +112,7 @@ public class TodayChallengeServiceImplTest {
         Challenge challenge = new Challenge(1L, "제목1",ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10, 0, 1L);
         for (int i = 0; i < 7; i++) {
-            TodayChallenge todayChallenge = new TodayChallenge(i, 10, 1L, LocalDate.now().minusDays(i));
+            TodayChallenge todayChallenge = new TodayChallenge(i, 10, 1L, LocalDate.now().minusDays(i), true);
             when(todayChallengeDao.selectTodayChallengeById(todayChallenge.getId())).thenReturn(todayChallenge);
         }
         TodayChallengeDto todayChallengeDto = new TodayChallengeDto(0, 10, 1L, LocalDate.now());
@@ -132,7 +132,7 @@ public class TodayChallengeServiceImplTest {
         Challenge challenge = new Challenge(1L, "제목1",ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
         for (int i = 1; i <= 8; i++) {
-            TodayChallenge todayChallenge = new TodayChallenge(i, 10L, challenge.getId(), LocalDate.now().minusDays(i));
+            TodayChallenge todayChallenge = new TodayChallenge(i, 10L, challenge.getId(), LocalDate.now().minusDays(i), true);
             when(todayChallengeDao.selectTodayChallengeById(todayChallenge.getId())).thenReturn(todayChallenge);
         }
         TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, challenge.getId(), LocalDate.now());
@@ -154,7 +154,7 @@ public class TodayChallengeServiceImplTest {
         Challenge challenge = new Challenge(1L, "제목1", ChallengeStatus.ONGOING, ExerciseType.SQUAT,
                 LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
         for (int i = 0; i < 30; i++) {
-            TodayChallenge todayChallenge = new TodayChallenge(i, 10L, challenge.getId(), LocalDate.now().minusDays(i));
+            TodayChallenge todayChallenge = new TodayChallenge(i, 10L, challenge.getId(), LocalDate.now().minusDays(i), true);
             when(todayChallengeDao.selectTodayChallengeById(todayChallenge.getId())).thenReturn(todayChallenge);
         }
         TodayChallengeDto todayChallengeDto = new TodayChallengeDto(0, 10L, challenge.getId(), LocalDate.now());
@@ -175,7 +175,7 @@ public class TodayChallengeServiceImplTest {
     void modifyUnachievementTodayChallenge() throws Exception {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         Challenge challenge = new Challenge(1L, "제목1",ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now(), LocalDate.now(), 10L, 0,1L);
-        TodayChallenge unachievedTodayChallenge = new TodayChallenge(1L, 5L, 1L, yesterday);
+        TodayChallenge unachievedTodayChallenge = new TodayChallenge(1L, 5L, 1L, yesterday, false);
 
         when(todayChallengeDao.findUnachievedChallenges(yesterday)).thenReturn(List.of(unachievedTodayChallenge));
         when(challengeService.getChallengeDetail(unachievedTodayChallenge.getChallengeId())).thenReturn(challenge);

@@ -4,6 +4,8 @@ import com.him.fpjt.him_backend.exercise.domain.Game;
 import com.him.fpjt.him_backend.exercise.dto.GameDto;
 import com.him.fpjt.him_backend.exercise.service.GameService;
 import com.him.fpjt.him_backend.user.service.UserService;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,5 +34,18 @@ public class GameController {
         } else {
             return ResponseEntity.ok("성취하지 않은 상태이므로 경험치가 반영되지 않았습니다.");
         }
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getMonthlyGame(@PathVariable("userId") long userId,
+                                            @RequestParam("year") int year,
+                                            @RequestParam("month") int month) {
+        List<Game> games = gameService.getMonthlyGame(userId, year, month);
+        return ResponseEntity.ok().body(games);
+    }
+    @GetMapping("/list")
+    public ResponseEntity<Object> getGames(@RequestParam(value = "userId") long userId, @RequestParam(value = "date") LocalDate date) {
+        List<Game> games = gameService.getGameByUserIdAndDate(userId, date);
+        return ResponseEntity.ok().body(games);
     }
 }
