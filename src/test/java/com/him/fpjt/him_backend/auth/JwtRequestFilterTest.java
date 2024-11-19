@@ -37,7 +37,6 @@ class JwtRequestFilterTest {
 
     @Test
     void testExpiredAccessTokenAndRefreshTokenUsage() throws ServletException, IOException {
-        // 준비
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain filterChain = mock(FilterChain.class);
@@ -56,10 +55,8 @@ class JwtRequestFilterTest {
         when(authService.findRefreshTokenByEmail(email)).thenReturn(new RefreshToken(1L, validRefreshToken, email, LocalDateTime.now().plusDays(1)));
         when(jwtUtil.generateToken(email)).thenReturn(newAccessToken);
 
-        // 실행
         jwtRequestFilter.doFilterInternal(request, response, filterChain);
 
-        // 검증
         verify(jwtUtil, times(1)).generateToken(email);
         assert Objects.equals(response.getHeader("New-Access-Token"), newAccessToken);
     }
