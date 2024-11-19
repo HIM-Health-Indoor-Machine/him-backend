@@ -1,16 +1,28 @@
 package com.him.fpjt.him_backend.auth.service;
 
+import com.him.fpjt.him_backend.auth.dao.RefreshTokenDao;
 import com.him.fpjt.him_backend.auth.dao.VerificationCodeDao;
+import com.him.fpjt.him_backend.auth.domain.RefreshToken;
+import com.him.fpjt.him_backend.auth.dto.AuthenticationRequest;
+import com.him.fpjt.him_backend.auth.dto.SignupDto;
 import com.him.fpjt.him_backend.common.constants.EmailTemplates;
 import com.him.fpjt.him_backend.common.util.CodeGenerator;
 import com.him.fpjt.him_backend.common.util.EmailSender;
+import com.him.fpjt.him_backend.common.util.JwtUtil;
 import com.him.fpjt.him_backend.user.dao.UserDao;
 import com.him.fpjt.him_backend.auth.domain.VerificationCode;
 import com.him.fpjt.him_backend.auth.dto.VerificationCodeDto;
+import com.him.fpjt.him_backend.auth.dto.AuthenticationResponse;
+import org.springframework.security.authentication.AuthenticationManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
+
+import com.him.fpjt.him_backend.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,22 +30,100 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthServiceImpl implements AuthService {
     private final UserDao userDao;
+    private final RefreshTokenDao refreshTokenDao;
     private final EmailSender emailSender;
     private final CodeGenerator codeGenerator;
     private final VerificationCodeDao verificationCodeDao;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthServiceImpl(UserDao userDao, EmailSender emailSender, CodeGenerator codeGenerator,
-            VerificationCodeDao verificationCodeDao) {
+    public AuthServiceImpl(UserDao userDao, RefreshTokenDao refreshTokenDao, EmailSender emailSender, CodeGenerator codeGenerator,
+            VerificationCodeDao verificationCodeDao, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.userDao = userDao;
+        this.refreshTokenDao = refreshTokenDao;
         this.emailSender = emailSender;
         this.codeGenerator = codeGenerator;
         this.verificationCodeDao = verificationCodeDao;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
     }
 
+    @Transactional
+    @Override
+    public AuthenticationResponse login(AuthenticationRequest authenticationRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authenticationRequest.getEmail(),
+                        authenticationRequest.getPassword()
+                )
+        );
+
+        String accessToken = jwtUtil.generateToken(authenticationRequest.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(authenticationRequest.getEmail());
+
+        saveRefreshToken(refreshToken, authenticationRequest.getEmail(), LocalDateTime.now().plusDays(30));
+
+        User user = userDao.selectUserByEmail(authenticationRequest.getEmail());
+        Long userId = user.getId();
+
+        return new AuthenticationResponse(accessToken, authenticationRequest.getEmail(), userId, "로그인 성공");
+    }
+
+    @Transactional
+    @Override
+    public void signupUser(SignupDto signupDto) {
+        if (userDao.existsByEmail(signupDto.getEmail())) {
+            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+        }
+
+        if (userDao.existsDuplicatedNickname(signupDto.getNickname())) {
+            throw new IllegalStateException("이미 사용 중인 닉네임입니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(signupDto.getPassword());
+
+        User newUser = new User(signupDto.getNickname(), signupDto.getEmail(), encodedPassword);
+
+        userDao.saveUser(newUser);
+    }
+
+    @Transactional
+    @Override
+    public void saveRefreshToken(String refreshToken, String userEmail, LocalDateTime expiryDate) {
+        RefreshToken tokenEntity = new RefreshToken(refreshToken, userEmail, expiryDate);
+        refreshTokenDao.saveRefreshToken(tokenEntity);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public RefreshToken findRefreshTokenByEmail(String email) {
+        return refreshTokenDao.findRefreshTokenByEmail(email);
+    }
+
+    @Transactional
+    @Override
+    public void deleteRefreshTokenByEmail(String email) {
+        refreshTokenDao.deleteByUserEmail(email);
+    }
+
+    @Transactional
+    @Override
+    public User findUserByEmail(String email) {
+        User user = userDao.selectUserByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다.");
+        }
+        return user;
+    }
+
+    @Transactional
     @Override
     public boolean checkDuplicatedNickname(String nickname) {
         return userDao.existsDuplicatedNickname(nickname);
     }
+
     @Transactional
     @Override
     public void sendVerificationCode(VerificationCodeDto verificationCodeDto) {
@@ -43,6 +133,7 @@ public class AuthServiceImpl implements AuthService {
         saveVerificationCode(verificationCodeDto, code);
     }
 
+    @Transactional
     private void saveVerificationCode(VerificationCodeDto verificationCodeDto, String code) {
         VerificationCode verificationCode = new VerificationCode(verificationCodeDto.getEmail(), code, LocalDateTime.now());
         int result = verificationCodeDao.insertVerificationCode(verificationCode);

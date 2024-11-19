@@ -13,11 +13,19 @@ public class User {
     private String email;
     private String password;
     private String profileImg;
-    private Tier tier = Tier.IRON;
-    private long exp = 0;
+    private Tier tier;
+    private long exp;
 
-    public User() {
+    public User() {}
+
+    public User(String nickname, String email, String password) {
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.tier = Tier.IRON;
+        this.exp = 0L;
     }
+
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
