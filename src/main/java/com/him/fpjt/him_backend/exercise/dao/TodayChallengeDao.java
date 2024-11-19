@@ -11,5 +11,6 @@ public interface TodayChallengeDao {
     public long updateTodayChallenge(TodayChallenge todayChallenge);
     public boolean checkAchievementBonus(long challengeId, LocalDate date, int days);
     public List<TodayChallenge> findUnachievedChallenges(LocalDate yesterday);
+    public List<TodayChallenge> selectTodayChallengeByUserIdAndDateRange(long userId, LocalDate startOfMonth, LocalDate endOfMonth);
     public long updateIsAchieved(long id);
 }

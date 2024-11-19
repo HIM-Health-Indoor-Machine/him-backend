@@ -30,6 +30,13 @@
       AND c.status = 'ONGOING'
       AND tc.cnt &lt; c.goal_cnt
   </select>
+  <select id="selectTodayChallengeByUserIdAndDateRange" parameterType="map" resultType="TodayChallenge">
+      SELECT tc.*
+      FROM today_challenge tc
+             JOIN challenge c ON tc.challenge_id = c.id
+      WHERE c.user_id = #{userId}
+        AND tc.date BETWEEN #{startOfMonth} AND #{endOfMonth}
+  </select>
   <update id="updateIsAchieved" parameterType="long">
     UPDATE today_challenge SET is_achieved = true WHERE id = #{id}
   </update>
