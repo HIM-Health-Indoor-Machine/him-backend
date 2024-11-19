@@ -41,7 +41,6 @@ public class TodayChallengeController {
             @RequestParam("year") int year,
             @RequestParam("month") int month) {
         List<TodayChallenge> todayChallenges = todayChallengeService.getMonthlyTodayChallenge(userId, year, month);
-        System.out.println(todayChallenges.toString());
         return ResponseEntity.ok().body(todayChallenges);
     }
 }
