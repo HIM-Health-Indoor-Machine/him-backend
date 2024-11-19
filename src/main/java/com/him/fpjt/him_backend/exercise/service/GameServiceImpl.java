@@ -5,6 +5,8 @@ import com.him.fpjt.him_backend.exercise.dao.GameDao;
 import com.him.fpjt.him_backend.exercise.domain.DifficultyLevel;
 import com.him.fpjt.him_backend.exercise.domain.Game;
 import com.him.fpjt.him_backend.user.dao.UserDao;
+import java.time.YearMonth;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,5 +87,16 @@ public class GameServiceImpl implements GameService {
             case MEDIUM -> ExpPoints.GAME_MEDIUM_MODE;
             case HARD -> ExpPoints.GAME_HARD_MODE;
         };
+    }
+
+    @Override
+    public List<Game> getMonthlyGame(long userId, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        List<Game> games = gameDao.selectGameByUserIdAndDateRange(userId, yearMonth.atDay(1),
+                yearMonth.atEndOfMonth());
+        if (games == null || games.isEmpty()) {
+            throw new NoSuchElementException("해당 회원의 게임 기록이 존재하지 않습니다.");
+        }
+        return games;
     }
 }
