@@ -24,7 +24,9 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run : ./gradlew clean build -i
+      env:
+        MAIL_HOST: ${{ secrets.MAIL_HOST }}
+      run: echo "MAIL_HOST=$MAIL_HOST" && ./gradlew clean build
 
    
     - name: Make Directory for deliver
