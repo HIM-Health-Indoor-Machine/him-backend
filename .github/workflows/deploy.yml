@@ -11,7 +11,7 @@ env:
   S3_BUCKET_NAME: him-backend-build
   CODE_DEPLOY_APPLICATION_NAME: him-codedeploy-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: him-codedeploy-deployment-group
-  RESOURCE_PATH: ./src/main/resources/application.yaml
+  RESOURCE_PATH: ./src/main/resources/application.yml
 
 jobs:
   deploy:
