@@ -48,6 +48,7 @@ public class ChallengeServiceImpl implements ChallengeService {
     }
 
     @Override
+    @Transactional
     public void modifyChallenge(long id, ChallengeDto challengeDto) {
         Challenge Challenge = findChallenge(id);
         modifyChallengeFields(challengeDto, Challenge);
@@ -92,11 +93,13 @@ public class ChallengeServiceImpl implements ChallengeService {
 
 
     @Override
+    @Transactional
     public boolean modifyChallengeAchieveCnt(long id) {
         return challengeDao.updateChallengeAchieveCnt(id) > 0;
     }
 
     @Override
+    @Transactional
     @Scheduled(cron = "10 0 0 * * ?")
     public void modifyChallengeStatus() {
         LocalDate today = LocalDate.now();
