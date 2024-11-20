@@ -11,6 +11,7 @@ env:
   S3_BUCKET_NAME: him-backend-build
   CODE_DEPLOY_APPLICATION_NAME: him-codedeploy-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: him-codedeploy-deployment-group
+  RESOURCE_PATH: ./src/main/resources/application.yaml
 
 jobs:
   deploy:
@@ -42,6 +43,18 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set Environment Variable
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          spring.mail.host: ${{ secrets.MAIL_HOST }}
+          spring.mail.username: ${{ secrets.MAIL_USERNAME }}
+          spring.mail.password: ${{ secrets.MAIL_PASSWORD }}
+          jwt.secret: ${{ secrets.SECRET_KEY }}
+          jwt.expiration: ${{ secrets.JWT_EXPIRATION }}
+          refresh.expiration: ${{ secrets.REFRESH_EXPIRATION }}
 
       - name: Upload to AWS S3
         run: |
