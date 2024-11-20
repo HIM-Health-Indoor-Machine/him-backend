@@ -38,7 +38,7 @@ jobs:
       run: mkdir deploy
 
     - name: Copy Jar
-      run: cp ./build/libs/him_backend-0.0.1-SNAPSHOT.jar ./deploy/
+      run: cp ./build/libs/*.jar ./deploy/
 
     - name: Make zip file
       run: zip -r -qq -j ./him-backend-build.zip ./deploy
