@@ -9,6 +9,11 @@
         WHERE id = #{userId}
     </update>
 
+    <update id="updateUserTier" parameterType="map">
+        UPDATE user SET tier = #{tier}
+        WHERE id = #{userId}
+    </update>
+
     <select id="selectAllUserIds" resultType="long">
         SELECT id FROM user
     </select>
