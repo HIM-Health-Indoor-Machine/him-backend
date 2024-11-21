@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: local
   mail:
     host: ${MAIL_HOST}
     port: 587
@@ -13,6 +11,11 @@ spring:
           timeout: 50000
           starttls.enable: true
         debug: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/ssafydb?serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: user
+    password: 1234
 
 jwt:
   secret: ${SECRET_KEY}
@@ -26,14 +29,3 @@ mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
----
-spring:
-  config:
-    activate:
-      on-profile: local
-  datasource:
-    url: jdbc:mysql://localhost:3306/ssafydb?serverTimezone=UTC
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 1234
-
