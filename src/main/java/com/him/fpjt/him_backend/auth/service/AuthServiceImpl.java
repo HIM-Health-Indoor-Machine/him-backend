@@ -3,16 +3,15 @@ package com.him.fpjt.him_backend.auth.service;
 import com.him.fpjt.him_backend.auth.dao.RefreshTokenDao;
 import com.him.fpjt.him_backend.auth.dao.VerificationCodeDao;
 import com.him.fpjt.him_backend.auth.domain.RefreshToken;
-import com.him.fpjt.him_backend.auth.dto.AuthenticationRequest;
-import com.him.fpjt.him_backend.auth.dto.SignupDto;
+import com.him.fpjt.him_backend.auth.dto.*;
+import com.him.fpjt.him_backend.common.exception.EmailAlreadyExistsException;
+import com.him.fpjt.him_backend.common.exception.NicknameAlreadyExistsException;
 import com.him.fpjt.him_backend.common.constants.EmailTemplates;
 import com.him.fpjt.him_backend.common.util.CodeGenerator;
 import com.him.fpjt.him_backend.common.util.EmailSender;
 import com.him.fpjt.him_backend.common.util.JwtUtil;
 import com.him.fpjt.him_backend.user.dao.UserDao;
 import com.him.fpjt.him_backend.auth.domain.VerificationCode;
-import com.him.fpjt.him_backend.auth.dto.VerificationCodeDto;
-import com.him.fpjt.him_backend.auth.dto.AuthenticationResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -39,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthServiceImpl(UserDao userDao, RefreshTokenDao refreshTokenDao, EmailSender emailSender, CodeGenerator codeGenerator,
-            VerificationCodeDao verificationCodeDao, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+                           VerificationCodeDao verificationCodeDao, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.userDao = userDao;
         this.refreshTokenDao = refreshTokenDao;
         this.emailSender = emailSender;
@@ -60,13 +59,13 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-        String accessToken = jwtUtil.generateToken(authenticationRequest.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(authenticationRequest.getEmail());
-
-        saveRefreshToken(refreshToken, authenticationRequest.getEmail(), LocalDateTime.now().plusDays(30));
-
         User user = userDao.selectUserByEmail(authenticationRequest.getEmail());
         Long userId = user.getId();
+
+        String accessToken = jwtUtil.generateToken(authenticationRequest.getEmail(), userId);
+        String refreshToken = jwtUtil.generateRefreshToken(authenticationRequest.getEmail(), userId);
+
+        saveRefreshToken(refreshToken, authenticationRequest.getEmail(), LocalDateTime.now().plusDays(30));
 
         return new AuthenticationResponse(accessToken, authenticationRequest.getEmail(), userId, "로그인 성공");
     }
@@ -75,11 +74,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void signupUser(SignupDto signupDto) {
         if (userDao.existsByEmail(signupDto.getEmail())) {
-            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+            throw new EmailAlreadyExistsException("이미 존재하는 이메일입니다.");
         }
 
         if (userDao.existsDuplicatedNickname(signupDto.getNickname())) {
-            throw new IllegalStateException("이미 사용 중인 닉네임입니다.");
+            throw new NicknameAlreadyExistsException("이미 사용 중인 닉네임입니다.");
         }
 
         String encodedPassword = passwordEncoder.encode(signupDto.getPassword());
@@ -99,19 +98,27 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     @Override
     public RefreshToken findRefreshTokenByEmail(String email) {
-        return refreshTokenDao.findRefreshTokenByEmail(email);
+        RefreshToken refreshToken = refreshTokenDao.findRefreshTokenByEmail(email);
+        if (refreshToken == null) {
+            throw new IllegalArgumentException("해당 이메일에 대한 Refresh Token이 존재하지 않습니다.");
+        }
+        return refreshToken;
     }
 
     @Transactional
     @Override
     public void deleteRefreshTokenByEmail(String email) {
-        refreshTokenDao.deleteByUserEmail(email);
+        System.out.println("AuthServiceImpl: " + email);
+        int rowsAffected = refreshTokenDao.deleteByUserEmail(email);
+        if (rowsAffected == 0) {
+            throw new IllegalStateException("해당 이메일에 대한 Refresh Token이 존재하지 않습니다.");
+        }
     }
 
-    @Transactional
     @Override
     public User findUserByEmail(String email) {
         User user = userDao.selectUserByEmail(email);
+        System.out.println("AuthServiceImpl email: " + email);
         if (user == null) {
             throw new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다.");
         }

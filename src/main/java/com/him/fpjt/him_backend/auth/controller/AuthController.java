@@ -7,12 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
@@ -37,8 +32,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestParam String email) {
-        authService.deleteRefreshTokenByEmail(email);
+    public ResponseEntity<String> logout(@RequestBody LogoutDto logoutDto) {
+        authService.deleteRefreshTokenByEmail(logoutDto.getEmail());
         return ResponseEntity.ok("로그아웃이 완료되었습니다. 모든 토큰이 삭제되었습니다.");
     }
 
