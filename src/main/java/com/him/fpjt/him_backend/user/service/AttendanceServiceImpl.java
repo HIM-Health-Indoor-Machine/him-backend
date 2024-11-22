@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AttendanceServiceImpl implements AttendenceService{
-    private AttendanceDao attendanceDao;
-    private UserService userService;
+    private final AttendanceDao attendanceDao;
+    private final UserService userService;
 
     public AttendanceServiceImpl(AttendanceDao attendanceDao, UserService userService) {
         this.attendanceDao = attendanceDao;

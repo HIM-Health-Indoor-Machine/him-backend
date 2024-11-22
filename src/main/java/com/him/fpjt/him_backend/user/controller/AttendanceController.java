@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/attendance")
-@CrossOrigin(origins = "http://localhost:5173")
 public class AttendanceController {
-    private AttendenceService attendenceService;
+    private final AttendenceService attendenceService;
 
     public AttendanceController(AttendenceService attendenceService) {
         this.attendenceService = attendenceService;
@@ -30,8 +29,8 @@ public class AttendanceController {
     }
     @GetMapping("{userId}")
     public ResponseEntity<?> getMonthlyAttendance(@PathVariable("userId") long userId,
-                                                @RequestParam("year") int year,
-                                                @RequestParam("month") int month) {
+                                                  @RequestParam("year") int year,
+                                                  @RequestParam("month") int month) {
         List<Attendance> attendances = attendenceService.getMonthlyAttendance(userId, year, month);
         return ResponseEntity.ok().body(attendances);
     }

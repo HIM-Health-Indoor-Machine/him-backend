@@ -18,12 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class TodayChallengeServiceImpl implements TodayChallengeService {
-    private TodayChallengeDao todayChallengeDao;
-    private ChallengeService challengeService;
-    private UserService userService;
+    private final TodayChallengeDao todayChallengeDao;
+    private final ChallengeService challengeService;
+    private final UserService userService;
 
     public TodayChallengeServiceImpl(TodayChallengeDao todayChallengeDao,
-            ChallengeService challengeService, UserService userService) {
+                                     ChallengeService challengeService, UserService userService) {
         this.todayChallengeDao = todayChallengeDao;
         this.challengeService = challengeService;
         this.userService = userService;
