@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class ChallengeServiceImpl implements ChallengeService {
-    private ChallengeDao challengeDao;
+    private final ChallengeDao challengeDao;
     public ChallengeServiceImpl(ChallengeDao challengeDao) {
         this.challengeDao = challengeDao;
     }

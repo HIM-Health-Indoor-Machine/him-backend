@@ -39,8 +39,8 @@
     </select>
 
     <insert id="saveUser" parameterType="User">
-        INSERT INTO user (nickname, email, password, tier, exp)
-        VALUES (#{nickname}, #{email}, #{password}, #{tier}, #{exp})
+        INSERT INTO user (nickname, email, password, profile_img, tier, exp)
+        VALUES (#{nickname}, #{email}, #{password}, #{profileImg}, #{tier}, #{exp})
     </insert>
 
     <select id="existsByEmail" parameterType="String" resultType="boolean">

@@ -8,6 +8,6 @@ public interface UserService {
 
     void modifyUserExp(long userId, long expPoints);
     List<Long> getAllUserIds();
-    UserInfoDto getUserById(long userId);
-    void modifyUserInfo(long userId, UserModifyDto userModifyDto);
+    UserInfoDto getUserById(long userId, long currentUserId);
+    void modifyUserInfo(long userId, long currentUserId, UserModifyDto userModifyDto);
 }

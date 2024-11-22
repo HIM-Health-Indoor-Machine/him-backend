@@ -1,15 +1,17 @@
 package com.him.fpjt.him_backend.auth.dto;
 
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Data
+@Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
-    private String accessToken;
+public class LogoutDto {
+    @Email
     private String email;
-    private Long userId;
-    private String message;
 }
+

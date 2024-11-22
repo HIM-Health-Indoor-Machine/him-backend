@@ -8,6 +8,8 @@ import com.him.fpjt.him_backend.user.dto.UserModifyDto;
 import com.him.fpjt.him_backend.user.util.TierManager;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +46,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoDto getUserById(long userId) {
+    public UserInfoDto getUserById(long userId, long currentUserId) {
+        if (userId != currentUserId) {
+            throw new AccessDeniedException("다른 사용자의 정보에 접근할 수 없습니다.");
+        }
         User user = verifyUserExists(userId);
         return new UserInfoDto(user.getId(), user.getNickname(), user.getEmail(),
                 user.getProfileImg(), user.getTier(), user.getExp());
@@ -58,7 +63,10 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional
-    public void modifyUserInfo(long userId, UserModifyDto userModifyDto) {
+    public void modifyUserInfo(long userId, long currentUserId, UserModifyDto userModifyDto) {
+        if (userId != currentUserId) {
+            throw new AccessDeniedException("다른 사용자의 정보를 수정할 수 없습니다.");
+        }
         User user = verifyUserExists(userId);
         modifyUserFields(userModifyDto, user);
         int result = userDao.updateUserInfo(user);
