@@ -21,6 +21,7 @@ jwt:
   secret: ${SECRET_KEY}
   expiration: ${JWT_EXPIRATION}
 refresh:
+  secret: ${REFRESH_SECRET_KEY}
   expiration: ${REFRESH_EXPIRATION}
 
 mybatis:
