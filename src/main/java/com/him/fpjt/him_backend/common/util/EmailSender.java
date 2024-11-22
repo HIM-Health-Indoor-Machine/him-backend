@@ -22,11 +22,13 @@ public class EmailSender {
     public void sendVerificationCode(String to, String subject, String text) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(text, true);
+            helper.setFrom("HIM");
             mailSender.send(mimeMessage);
+
         } catch (MessagingException e) {
             log.error("fail to send verification code");
             throw new IllegalArgumentException("인증 코드 발송에 실패하였습니다.");
