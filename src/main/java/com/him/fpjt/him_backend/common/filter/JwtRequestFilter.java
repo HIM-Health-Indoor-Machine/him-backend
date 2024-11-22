@@ -3,6 +3,8 @@ package com.him.fpjt.him_backend.common.filter;
 import com.him.fpjt.him_backend.auth.domain.RefreshToken;
 import com.him.fpjt.him_backend.auth.service.AuthService;
 import com.him.fpjt.him_backend.common.util.JwtUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,17 +36,40 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestPath = request.getRequestURI();
+        if (requestPath.startsWith("/api/auth/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authorizationHeader = request.getHeader("Authorization");
         String jwt = extractJwtFromHeader(authorizationHeader);
-        String email = jwt != null ? jwtUtil.extractEmail(jwt) : null;
+
+        String email = null;
+        Long userId = null;
+
+        try {
+            if (jwt != null) {
+                email = jwtUtil.extractEmail(jwt); // 이메일 추출
+                userId = jwtUtil.extractUserId(jwt); // userId 추출
+            }
+        } catch (ExpiredJwtException e) {
+            Claims claims = e.getClaims();
+            email = claims.getSubject(); // 만료된 토큰에서 이메일 추출
+            userId = claims.get("userId", Long.class); // 만료된 토큰에서 userId 추출
+        }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
             if (jwtUtil.isTokenExpired(jwt)) {
                 handleExpiredToken(response, email, userDetails, request);
-            } else if (jwtUtil.validateToken(jwt, email)) {
-                setAuthentication(userDetails, request);
+                return;
             }
+
+            System.out.println("넘어오나?");
+
+            setAuthentication(userDetails, userId, request);
         }
 
         filterChain.doFilter(request, response);
@@ -62,11 +87,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         RefreshToken refreshToken = authService.findRefreshTokenByEmail(email);
         if (refreshToken != null && refreshToken.getExpiryDate().isAfter(LocalDateTime.now())) {
-            String newAccessToken = jwtUtil.generateToken(email);
+            Long userId = authService.findUserByEmail(email).getId();
+            String newAccessToken = jwtUtil.generateToken(email, userId);
             response.setHeader("New-Access-Token", newAccessToken);
             logger.info("새로운 Access Token이 발급되었습니다.");
 
-            setAuthentication(userDetails, request);
+            setAuthentication(userDetails, userId, request);
         } else {
             logger.warn("Refresh Token이 만료되었거나 존재하지 않습니다.");
             authService.deleteRefreshTokenByEmail(email);
@@ -75,7 +101,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setAuthentication(UserDetails userDetails, HttpServletRequest request) {
+    private void setAuthentication(UserDetails userDetails, Long userId, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

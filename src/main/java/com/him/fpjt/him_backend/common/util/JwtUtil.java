@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
@@ -17,54 +18,86 @@ public class JwtUtil {
 
     private final Key secretKey;
     private final long jwtExpirationMs;
+    private final Key refreshSecretKey;
     private final long refreshExpirationMs;
 
     public JwtUtil(@Value("${jwt.secret}") String secretKey,
                    @Value("${jwt.expiration}") long jwtExpirationMs,
+                   @Value("${refresh.secret}") String refreshSecretKey,
                    @Value("${refresh.expiration}") long refreshExpirationMs) {
-        byte[] keyBytes = secretKey.getBytes();
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        byte[] refreshKeyBytes = refreshSecretKey.getBytes(StandardCharsets.UTF_8);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
         this.jwtExpirationMs = jwtExpirationMs;
+        this.refreshSecretKey = Keys.hmacShaKeyFor(refreshKeyBytes);
         this.refreshExpirationMs = refreshExpirationMs;
     }
 
-    private Key getSigningKey() {
-        return secretKey;
-    }
+//    private Key getSigningKey() {
+//        return secretKey;
+//    }
 
-    public String generateToken(String email) {
-        return Jwts.builder()
-                .setSubject(email)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
+    public String generateToken(String email, Long userId) {
+        long currentTimeMillis = System.currentTimeMillis();
+        System.out.println("Generating Token:");
+        System.out.println("Current time millis: " + currentTimeMillis);
+        System.out.println("Email: " + email);
+        System.out.println("UserId: " + userId);
 
-    public String generateRefreshToken(String email) {
+        System.out.println("Token generation time: " + new Date(currentTimeMillis));
         return Jwts.builder()
+                .setHeaderParam("type", "access")
                 .setSubject(email)
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(currentTimeMillis + jwtExpirationMs))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean validateToken(String token, String email) {
-        final String extractedEmail = extractEmail(token);
-        return (extractedEmail.equals(email) && !isTokenExpired(token));
+    public String generateRefreshToken(String email, Long userId) {
+        long currentTimeMillis = System.currentTimeMillis();
+        return Jwts.builder()
+                .setHeaderParam("type", "refresh")
+                .setSubject(email)
+                .claim("userId", userId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(currentTimeMillis + refreshExpirationMs))
+                .signWith(refreshSecretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public Long extractUserId(String token) {
+        try {
+            return extractClaim(token, claims -> claims.get("userId", Long.class));
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰에서도 userId 추출
+            return e.getClaims().get("userId", Long.class);
+        }
     }
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+
     public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        try {
+            Date expiration = extractExpiration(token);
+            return expiration.before(new Date(System.currentTimeMillis()));
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰인 경우 true 반환
+            return true;
+        }
     }
 
     public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        try {
+            return extractClaim(token, Claims::getExpiration);
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰에서도 만료 시간을 반환
+            return e.getClaims().getExpiration();
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -74,7 +107,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(secretKey)
                 .setAllowedClockSkewSeconds(1)
                 .build()
                 .parseClaimsJws(token)
