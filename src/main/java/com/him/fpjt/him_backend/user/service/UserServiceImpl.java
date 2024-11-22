@@ -1,9 +1,11 @@
 package com.him.fpjt.him_backend.user.service;
 
 import com.him.fpjt.him_backend.user.dao.UserDao;
+import com.him.fpjt.him_backend.user.domain.Tier;
 import com.him.fpjt.him_backend.user.domain.User;
 import com.him.fpjt.him_backend.user.dto.UserInfoDto;
 import com.him.fpjt.him_backend.user.dto.UserModifyDto;
+import com.him.fpjt.him_backend.user.util.TierManager;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,15 @@ public class UserServiceImpl implements UserService {
         int updateResult = userDao.updateUserExp(userId, expPoints);
         if (updateResult == 0) {
             throw new IllegalStateException("사용자 경험치 업데이트에 실패했습니다.");
+        }
+        User user = userDao.selectUserById(userId);
+        levelUpTier(user);
+    }
+
+    private void levelUpTier(User user) {
+        Tier currentTier = user.getTier();
+        if (user.getExp() >= TierManager.getRequiredExpForNextTier(currentTier)) {
+            userDao.updateUserTier(user.getId(), TierManager.getNextTier(currentTier));
         }
     }
 
