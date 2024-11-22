@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
@@ -69,12 +70,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(dto);
     }
 
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ExceptionDto> handleExpiredJwtException(ExpiredJwtException e) {
-        log.error("만료된 JWT 토큰: {}", e.getMessage(), e);
-        final ExceptionDto dto = new ExceptionDto(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다. 다시 로그인해주세요.", LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(dto);
-    }
+//    @ExceptionHandler(ExpiredJwtException.class)
+//    public ResponseEntity<ExceptionDto> handleExpiredJwtException(ExpiredJwtException e) {
+//        log.error("만료된 JWT 토큰: {}", e.getMessage(), e);
+//        final ExceptionDto dto = new ExceptionDto(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다. 다시 로그인해주세요.", LocalDateTime.now());
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(dto);
+//    }
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ExceptionDto> handleJwtException(io.jsonwebtoken.JwtException e) {
@@ -95,6 +96,19 @@ public class GlobalExceptionHandler {
         log.error("인증 오류: {}", e.getMessage(), e);
         final ExceptionDto dto = new ExceptionDto(HttpStatus.UNAUTHORIZED, "인증에 실패했습니다. 다시 시도해주세요.", LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(dto);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex) {
+        // 에러 응답 데이터 구성
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.FORBIDDEN.value());
+        errorResponse.put("error", HttpStatus.FORBIDDEN.getReasonPhrase());
+        errorResponse.put("message", "권한이 없습니다: " + ex.getMessage());
+        errorResponse.put("path", "");
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
 }
