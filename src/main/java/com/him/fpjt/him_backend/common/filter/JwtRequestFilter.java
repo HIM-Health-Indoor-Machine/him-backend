@@ -64,7 +64,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             if (jwtUtil.isTokenExpired(jwt)) {
                 handleExpiredToken(response, email, userDetails, request);
-                return;
             }
             setAuthentication(userDetails, userId, request);
         }
