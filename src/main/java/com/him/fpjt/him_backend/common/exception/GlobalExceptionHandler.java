@@ -1,7 +1,6 @@
 package com.him.fpjt.him_backend.common.exception;
 
 import com.him.fpjt.him_backend.common.exception.dto.ExceptionDto;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
