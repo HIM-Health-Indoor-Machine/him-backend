@@ -50,13 +50,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         try {
             if (jwt != null) {
-                email = jwtUtil.extractEmail(jwt); // 이메일 추출
-                userId = jwtUtil.extractUserId(jwt); // userId 추출
+                email = jwtUtil.extractEmail(jwt);
+                userId = jwtUtil.extractUserId(jwt);
             }
         } catch (ExpiredJwtException e) {
             Claims claims = e.getClaims();
-            email = claims.getSubject(); // 만료된 토큰에서 이메일 추출
-            userId = claims.get("userId", Long.class); // 만료된 토큰에서 userId 추출
+            email = claims.getSubject();
+            userId = claims.get("userId", Long.class);
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -66,9 +66,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 handleExpiredToken(response, email, userDetails, request);
                 return;
             }
-
-            System.out.println("넘어오나?");
-
             setAuthentication(userDetails, userId, request);
         }
 

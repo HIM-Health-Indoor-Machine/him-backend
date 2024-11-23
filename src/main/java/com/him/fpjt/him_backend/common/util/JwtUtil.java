@@ -33,18 +33,8 @@ public class JwtUtil {
         this.refreshExpirationMs = refreshExpirationMs;
     }
 
-//    private Key getSigningKey() {
-//        return secretKey;
-//    }
-
     public String generateToken(String email, Long userId) {
         long currentTimeMillis = System.currentTimeMillis();
-        System.out.println("Generating Token:");
-        System.out.println("Current time millis: " + currentTimeMillis);
-        System.out.println("Email: " + email);
-        System.out.println("UserId: " + userId);
-
-        System.out.println("Token generation time: " + new Date(currentTimeMillis));
         return Jwts.builder()
                 .setHeaderParam("type", "access")
                 .setSubject(email)
@@ -71,7 +61,6 @@ public class JwtUtil {
         try {
             return extractClaim(token, claims -> claims.get("userId", Long.class));
         } catch (ExpiredJwtException e) {
-            // 만료된 토큰에서도 userId 추출
             return e.getClaims().get("userId", Long.class);
         }
     }
@@ -86,7 +75,6 @@ public class JwtUtil {
             Date expiration = extractExpiration(token);
             return expiration.before(new Date(System.currentTimeMillis()));
         } catch (ExpiredJwtException e) {
-            // 만료된 토큰인 경우 true 반환
             return true;
         }
     }
@@ -95,7 +83,6 @@ public class JwtUtil {
         try {
             return extractClaim(token, Claims::getExpiration);
         } catch (ExpiredJwtException e) {
-            // 만료된 토큰에서도 만료 시간을 반환
             return e.getClaims().getExpiration();
         }
     }
