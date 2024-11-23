@@ -51,7 +51,6 @@ public class JwtUtil {
                 .setHeaderParam("type", "refresh")
                 .setSubject(email)
                 .claim("userId", userId)
-                .setIssuedAt(new Date())
                 .setExpiration(new Date(currentTimeMillis + refreshExpirationMs))
                 .signWith(refreshSecretKey, SignatureAlgorithm.HS256)
                 .compact();
