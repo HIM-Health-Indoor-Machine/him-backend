@@ -13,6 +13,7 @@
         SELECT id, token, email, expiry_date
         FROM refresh_tokens
         WHERE email = #{email}
+        ORDER BY expiry_date DESC LIMIT 1
     </select>
 
     <delete id="deleteByUserEmail" parameterType="String">
