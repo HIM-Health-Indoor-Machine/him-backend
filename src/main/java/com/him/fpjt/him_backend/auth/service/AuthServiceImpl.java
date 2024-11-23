@@ -139,7 +139,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional
-    private void saveVerificationCode(VerificationCodeDto verificationCodeDto, String code) {
+    void saveVerificationCode(VerificationCodeDto verificationCodeDto, String code) {
         VerificationCode verificationCode = new VerificationCode(verificationCodeDto.getEmail(), code, LocalDateTime.now());
         int result = verificationCodeDao.insertVerificationCode(verificationCode);
         if (result == 0) {
