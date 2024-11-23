@@ -24,7 +24,6 @@ public class SecurityConfig {
     public SecurityConfig(JwtRequestFilter jwtRequestFilter, CorsConfig corsConfig){
         this.jwtRequestFilter = jwtRequestFilter;
         this.corsConfig = corsConfig;
-
     }
 
     @Bean
@@ -32,14 +31,13 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/challenge/**").authenticated()
-                                .requestMatchers("/api/today-challenge/**").authenticated()
-                                .requestMatchers("/api/game/**").authenticated()
-                                .requestMatchers("/api/attendance/**").authenticated()
-                                .requestMatchers("/api/user/**").authenticated()
-                                .anyRequest().authenticated()
-//                        .anyRequest().permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/challenge/**").authenticated()
+                        .requestMatchers("/api/today-challenge/**").authenticated()
+                        .requestMatchers("/api/game/**").authenticated()
+                        .requestMatchers("/api/attendance/**").authenticated()
+                        .requestMatchers("/api/user/**").authenticated()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
