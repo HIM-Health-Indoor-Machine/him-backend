@@ -1,8 +1,10 @@
 package com.him.fpjt.him_backend.exercise.service;
 
 import com.him.fpjt.him_backend.exercise.dao.ChallengeDao;
+import com.him.fpjt.him_backend.exercise.dao.TodayChallengeDao;
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
+import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import com.him.fpjt.him_backend.exercise.dto.ChallengeDto;
 import java.time.LocalDate;
 import java.util.List;
@@ -15,8 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ChallengeServiceImpl implements ChallengeService {
     private final ChallengeDao challengeDao;
-    public ChallengeServiceImpl(ChallengeDao challengeDao) {
+    private final TodayChallengeDao todayChallengeDao;
+
+    public ChallengeServiceImpl(ChallengeDao challengeDao, TodayChallengeDao todayChallengeDao) {
         this.challengeDao = challengeDao;
+        this.todayChallengeDao = todayChallengeDao;
     }
 
     @Override
@@ -26,6 +31,8 @@ public class ChallengeServiceImpl implements ChallengeService {
         if (result == 0) {
             throw new IllegalStateException("챌린지 저장에 실패했습니다.");
         }
+        Challenge savedChallenge = challengeDao.selectChallengeByTitle(challenge.getTitle());
+        todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, savedChallenge.getId(), LocalDate.now(), false));
     }
 
     @Override
