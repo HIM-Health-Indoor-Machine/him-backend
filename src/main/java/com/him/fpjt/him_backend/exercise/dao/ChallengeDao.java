@@ -17,4 +17,5 @@ public interface ChallengeDao {
     public int updateChallengeStatus(LocalDate today);
     public int updateChallenge(Challenge challenge);
     public List<Long> selectAllChallengeId();
+    public Challenge selectChallengeByTitle(String title);
 }

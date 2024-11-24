@@ -87,7 +87,10 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
 
     private boolean isGoalAchieved(TodayChallenge todayChallenge) {
         long goalCnt = challengeService.getChallengeDetail(todayChallenge.getChallengeId()).getGoalCnt();
-        return todayChallenge.getCnt() >= goalCnt;
+        if (!todayChallenge.isAchieved() && todayChallenge.getCnt() >= goalCnt) {
+            return true;
+        }
+        return false;
     }
 
     private int calculateAchievementBonusExp(long challengeId, LocalDate currentDate) {

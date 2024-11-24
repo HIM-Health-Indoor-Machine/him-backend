@@ -62,4 +62,7 @@
     SET type = #{type}, start_dt = #{startDt}, end_dt = #{endDt}, goal_cnt = #{goalCnt}
     WHERE id = #{id}
   </update>
+  <select id="selectChallengeByTitle" resultType="Challenge">
+    SELECT * FROM challenge WHERE title = #{title}
+  </select>
 </mapper>
