@@ -47,15 +47,6 @@ jobs:
     - name: Make zip file
       run: zip -r -qq -j ./him-backend-build.zip ./deploy
 
-    - name: Verify Deploy Directory
-      run: ls -l ./deploy/
-
-    - name: Make Zip File
-      run: zip -r ./him-backend-build.zip ./deploy/
-
-    - name: Verify Zip File
-      run: ls -l ./him-backend-build.zip
-
     - name: Deliver to AWS S3
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
