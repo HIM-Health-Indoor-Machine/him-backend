@@ -42,6 +42,7 @@ jobs:
           spring.mail.password: ${{ secrets.MAIL_PASSWORD }}
           jwt.secret: ${{ secrets.SECRET_KEY }}
           jwt.expiration: ${{ secrets.JWT_EXPIRATION }}
+          refresh.secret: ${{ secrets.REFRESH_SECRET_KEY }}
           refresh.expiration: ${{ secrets.REFRESH_EXPIRATION }}
 
       - name: Grant execute permission for gradlew
