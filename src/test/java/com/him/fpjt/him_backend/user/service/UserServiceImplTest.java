@@ -38,6 +38,7 @@ class UserServiceImplTest {
         long expPoints = 20L;
 
         when(userDao.updateUserExp(userId, expPoints)).thenReturn(1);
+        when(userDao.selectUserById(userId)).thenReturn(new User(1L, "ollie", "email@example.com", "password", "profileImg.jpg", Tier.IRON, 2000));
 
         assertDoesNotThrow(() -> userService.modifyUserExp(userId, expPoints));
         verify(userDao, times(1)).updateUserExp(userId, expPoints);
@@ -72,6 +73,7 @@ class UserServiceImplTest {
 
         // Given: updateUserExp가 성공적으로 업데이트 된다고 가정
         when(userDao.updateUserExp(userId, expPoints)).thenReturn(1);
+        when(userDao.selectUserById(userId)).thenReturn(new User(1L, "ollie", "email@example.com", "password", "profileImg.jpg", Tier.IRON, 2000));
 
         // When & Then
         assertDoesNotThrow(() -> userService.modifyUserExp(userId, expPoints));
@@ -85,7 +87,7 @@ class UserServiceImplTest {
         User mockUser = new User(userId, "ollie", "email@example.com", "password","ollie.jpg", Tier.IRON, 2000);
         when(userDao.selectUserById(userId)).thenReturn(mockUser);
 
-        UserInfoDto userInfo = userService.getUserById(userId);
+        UserInfoDto userInfo = userService.getUserById(userId, userId);
 
         assertNotNull(userInfo);
         assertEquals(userId, userInfo.getId());
@@ -98,7 +100,7 @@ class UserServiceImplTest {
         long userId = 1L;
         when(userDao.selectUserById(userId)).thenReturn(null);
 
-        assertThrows(NoSuchElementException.class, () -> userService.getUserById(userId));
+        assertThrows(NoSuchElementException.class, () -> userService.getUserById(userId, userId));
     }
 
     @Test
@@ -111,7 +113,7 @@ class UserServiceImplTest {
         when(userDao.selectUserById(userId)).thenReturn(mockUser);
         when(userDao.updateUserInfo(mockUser)).thenReturn(1);
 
-        userService.modifyUserInfo(userId, userModifyDto);
+        userService.modifyUserInfo(userId, userId, userModifyDto);
 
         assertEquals("icarus", mockUser.getNickname());
         assertEquals("icarus.jpg", mockUser.getProfileImg());
@@ -128,7 +130,7 @@ class UserServiceImplTest {
         when(userDao.selectUserById(userId)).thenReturn(mockUser);
         when(userDao.updateUserInfo(mockUser)).thenReturn(0);
 
-        assertThrows(IllegalStateException.class, () -> userService.modifyUserInfo(userId, userModifyDto));
+        assertThrows(IllegalStateException.class, () -> userService.modifyUserInfo(userId, userId,userModifyDto));
     }
 
     @Test
@@ -139,6 +141,6 @@ class UserServiceImplTest {
 
         when(userDao.selectUserById(userId)).thenReturn(null);
 
-        assertThrows(NoSuchElementException.class, () -> userService.modifyUserInfo(userId, userModifyDto));
+        assertThrows(NoSuchElementException.class, () -> userService.modifyUserInfo(userId, userId,userModifyDto));
     }
 }

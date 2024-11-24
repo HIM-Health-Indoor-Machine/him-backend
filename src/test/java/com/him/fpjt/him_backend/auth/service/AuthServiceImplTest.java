@@ -1,4 +1,4 @@
-package com.him.fpjt.him_backend.auth;
+package com.him.fpjt.him_backend.auth.service;
 
 import com.him.fpjt.him_backend.auth.dao.RefreshTokenDao;
 import com.him.fpjt.him_backend.auth.dao.VerificationCodeDao;
@@ -7,6 +7,7 @@ import com.him.fpjt.him_backend.auth.dto.AuthenticationRequest;
 import com.him.fpjt.him_backend.auth.dto.SignupDto;
 import com.him.fpjt.him_backend.auth.dto.AuthenticationResponse;
 import com.him.fpjt.him_backend.auth.service.AuthServiceImpl;
+import com.him.fpjt.him_backend.common.exception.EmailAlreadyExistsException;
 import com.him.fpjt.him_backend.common.util.CodeGenerator;
 import com.him.fpjt.him_backend.common.util.EmailSender;
 import com.him.fpjt.him_backend.common.util.JwtUtil;
@@ -57,14 +58,14 @@ class AuthServiceImplTest {
         Authentication authentication = mock(Authentication.class);
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
-        when(jwtUtil.generateToken(request.getEmail())).thenReturn("accessToken");
-        when(jwtUtil.generateRefreshToken(request.getEmail())).thenReturn("refreshToken");
+        when(jwtUtil.generateToken(request.getEmail(), 1L)).thenReturn("accessToken");
+        when(jwtUtil.generateRefreshToken(request.getEmail(), 1L)).thenReturn("refreshToken");
         when(userDao.selectUserByEmail(request.getEmail())).thenReturn(new User(1L, "testUser", "test@example.com", "password", null, null, 0L));
 
         AuthenticationResponse response = authService.login(request);
 
         assertNotNull(response);
-        assertEquals("accessToken", response.getJwtToken());
+        assertEquals("accessToken", response.getAccessToken());
         assertEquals("test@example.com", response.getEmail());
         assertEquals(1L, response.getUserId());
         assertEquals("로그인 성공", response.getMessage());
@@ -91,7 +92,8 @@ class AuthServiceImplTest {
 
         when(userDao.existsByEmail(signupDto.getEmail())).thenReturn(true);
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> authService.signupUser(signupDto));
+        EmailAlreadyExistsException exception = assertThrows(EmailAlreadyExistsException.class,
+                () -> authService.signupUser(signupDto));
 
         assertEquals("이미 존재하는 이메일입니다.", exception.getMessage());
         verify(userDao, never()).saveUser(any(User.class));
@@ -114,7 +116,9 @@ class AuthServiceImplTest {
     void testDeleteRefreshTokenByEmail() {
         String email = "test@example.com";
 
-        authService.deleteRefreshTokenByEmail(email);
+        when(refreshTokenDao.deleteByUserEmail(email)).thenReturn(1);
+
+        assertDoesNotThrow(() -> authService.deleteRefreshTokenByEmail(email));
 
         verify(refreshTokenDao, times(1)).deleteByUserEmail(email);
     }

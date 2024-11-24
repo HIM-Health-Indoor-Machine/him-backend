@@ -1,4 +1,4 @@
-package com.him.fpjt.him_backend.auth;
+package com.him.fpjt.him_backend.auth.service;
 
 import com.him.fpjt.him_backend.user.dao.UserDao;
 import com.him.fpjt.him_backend.user.domain.Tier;
