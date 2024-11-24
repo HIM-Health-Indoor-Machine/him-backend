@@ -108,7 +108,6 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public void deleteRefreshTokenByEmail(String email) {
-        System.out.println("AuthServiceImpl: " + email);
         int rowsAffected = refreshTokenDao.deleteByUserEmail(email);
         if (rowsAffected == 0) {
             throw new IllegalStateException("해당 이메일에 대한 Refresh Token이 존재하지 않습니다.");
@@ -118,7 +117,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User findUserByEmail(String email) {
         User user = userDao.selectUserByEmail(email);
-        System.out.println("AuthServiceImpl email: " + email);
         if (user == null) {
             throw new IllegalArgumentException("해당 이메일을 가진 사용자가 없습니다.");
         }
@@ -141,7 +139,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional
-    private void saveVerificationCode(VerificationCodeDto verificationCodeDto, String code) {
+    void saveVerificationCode(VerificationCodeDto verificationCodeDto, String code) {
         VerificationCode verificationCode = new VerificationCode(verificationCodeDto.getEmail(), code, LocalDateTime.now());
         int result = verificationCodeDao.insertVerificationCode(verificationCode);
         if (result == 0) {
