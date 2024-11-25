@@ -22,7 +22,7 @@ public class User {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
-        this.profileImg = "/src/assets/images/character/character_CAT.png";
+        this.profileImg = "/assets/character_BEAR-jYBsEvav.png";
         this.tier = Tier.IRON;
         this.exp = 0L;
     }
