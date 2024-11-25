@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.him.fpjt.him_backend.exercise.dao.ChallengeDao;
+import com.him.fpjt.him_backend.exercise.dao.TodayChallengeDao;
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import com.him.fpjt.him_backend.exercise.domain.ExerciseType;
@@ -28,6 +29,8 @@ import org.mockito.MockitoAnnotations;
 public class ChallegeServiceImplTest {
     @Mock
     private ChallengeDao challengeDao;
+    @Mock
+    private TodayChallengeDao todayChallengeDao;
 
     @InjectMocks
     private ChallengeServiceImpl challengeService;
@@ -58,11 +61,18 @@ public class ChallegeServiceImplTest {
     @Test
     @DisplayName("챌린지 생성 성공 시에 true를 반환한다.")
     public void createChallenge_success() {
+        long challengeId = 1L;
         Challenge challenge = new Challenge("하루 10분 스쿼트", ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now(), LocalDate.now(), 10L, 1L);
 
         when(challengeDao.insertChallenge(challenge)).thenReturn(1);
+        when(challengeDao.selectChallengeByTitle(challenge.getTitle()))
+                .thenReturn(new Challenge(challengeId, "하루 10분 스쿼트", ChallengeStatus.ONGOING, ExerciseType.SQUAT,
+                        LocalDate.now(), LocalDate.now(), 10L, 0, 1L));
+        when(todayChallengeDao.insertTodayChallenge(any(TodayChallenge.class))).thenReturn(1L); // TodayChallenge 삽입 성공
 
-        assertDoesNotThrow(() -> challengeService.createChallenge(challenge));
+        long resultId = challengeService.createChallenge(challenge);
+
+        assertEquals(challengeId, resultId);
         verify(challengeDao).insertChallenge(challenge);
     }
 
