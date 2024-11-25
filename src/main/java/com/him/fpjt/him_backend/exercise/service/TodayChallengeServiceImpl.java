@@ -5,6 +5,7 @@ import com.him.fpjt.him_backend.exercise.dao.TodayChallengeDao;
 import com.him.fpjt.him_backend.exercise.domain.Challenge;
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
+import com.him.fpjt.him_backend.user.service.AttendenceService;
 import com.him.fpjt.him_backend.user.service.UserService;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -21,12 +22,15 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
     private final TodayChallengeDao todayChallengeDao;
     private final ChallengeService challengeService;
     private final UserService userService;
+    private final AttendenceService attendenceService;
 
     public TodayChallengeServiceImpl(TodayChallengeDao todayChallengeDao,
-                                     ChallengeService challengeService, UserService userService) {
+            ChallengeService challengeService, UserService userService,
+            AttendenceService attendenceService) {
         this.todayChallengeDao = todayChallengeDao;
         this.challengeService = challengeService;
         this.userService = userService;
+        this.attendenceService = attendenceService;
     }
 
     @Scheduled(cron = "0 1 0 * * ?")
@@ -73,6 +77,7 @@ public class TodayChallengeServiceImpl implements TodayChallengeService {
 
             addAchievementExp(todayChallenge, challenge);
             todayChallengeDao.updateIsAchieved(todayChallenge.getId());
+            attendenceService.setAttendanceStatus(challenge.getUserId(), LocalDate.now());
         }
         return isUpdated;
     }
