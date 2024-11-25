@@ -20,6 +20,7 @@ import com.him.fpjt.him_backend.exercise.domain.ChallengeStatus;
 import com.him.fpjt.him_backend.exercise.domain.ExerciseType;
 import com.him.fpjt.him_backend.exercise.domain.TodayChallenge;
 import com.him.fpjt.him_backend.exercise.dto.TodayChallengeDto;
+import com.him.fpjt.him_backend.user.service.AttendenceService;
 import com.him.fpjt.him_backend.user.service.UserService;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -39,6 +40,8 @@ public class TodayChallengeServiceImplTest {
     private ChallengeService challengeService;
     @Mock
     private UserService userService;
+    @Mock
+    private AttendenceService attendenceService;
     @InjectMocks
     private TodayChallengeServiceImpl todayChallengeService;
     @BeforeEach
@@ -93,82 +96,100 @@ public class TodayChallengeServiceImplTest {
     @Test
     @DisplayName("오늘의 챌린지를 달성할 경우, 경험치 5EXP를 추가한다.")
     void modifyTodayChallenge_getDailyExp() throws Exception {
-        Challenge challenge = new Challenge(1L, "제목1",ChallengeStatus.ONGOING, ExerciseType.SQUAT, LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0,1L);
-        TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, 1L, LocalDate.now(), true);
-        TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, 1L, LocalDate.now());
+        Challenge challenge = new Challenge(1L, "제목1", ChallengeStatus.ONGOING, ExerciseType.SQUAT,
+                LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
 
+        TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, 1L, LocalDate.now(), false);
+        TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, 1L, LocalDate.now());
         when(todayChallengeDao.selectTodayChallengeById(todayChallengeDto.getId())).thenReturn(todayChallenge);
         when(todayChallengeDao.updateTodayChallenge(todayChallenge)).thenReturn(1L);
         when(challengeService.getChallengeDetail(todayChallenge.getChallengeId())).thenReturn(challenge);
+
+        when(todayChallengeDao.updateIsAchieved(todayChallenge.getId())).thenReturn(1L);
+        doNothing().when(attendenceService).setAttendanceStatus(anyLong(), any(LocalDate.class));
         doNothing().when(userService).modifyUserExp(anyLong(), anyInt());
 
-        assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
+        boolean result = todayChallengeService.modifyTodayChallenge(todayChallengeDto);
 
+        assertTrue(result);
         verify(userService).modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
+        verify(todayChallengeDao, times(1)).updateIsAchieved(todayChallenge.getId());
+        verify(attendenceService, times(1)).setAttendanceStatus(challenge.getUserId(), LocalDate.now());
     }
     @Test
     @DisplayName("7일 내내 오늘의 챌린지 목표 달성 시, 경험치 10EXP를 추가한다.")
     void modifyTodayChallenge_get7DaysExp() throws Exception {
-        Challenge challenge = new Challenge(1L, "제목1",ChallengeStatus.ONGOING, ExerciseType.SQUAT,
-                LocalDate.now().minusDays(100), LocalDate.now(), 10, 0, 1L);
-        for (int i = 0; i < 7; i++) {
-            TodayChallenge todayChallenge = new TodayChallenge(i, 10, 1L, LocalDate.now().minusDays(i), true);
-            when(todayChallengeDao.selectTodayChallengeById(todayChallenge.getId())).thenReturn(todayChallenge);
-        }
-        TodayChallengeDto todayChallengeDto = new TodayChallengeDto(0, 10, 1L, LocalDate.now());
+        long challengeId = 1L;
+        long userId = 1L;
+        Challenge challenge = new Challenge(challengeId, "제목1", ChallengeStatus.ONGOING, ExerciseType.SQUAT,
+                LocalDate.now().minusDays(10), LocalDate.now(), 10L, 0, userId);
+        TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, challengeId, LocalDate.now());
+
+        when(todayChallengeDao.selectTodayChallengeById(anyLong()))
+                .thenReturn(new TodayChallenge(1L, 10L, challengeId, LocalDate.now(), false));
 
         when(todayChallengeDao.updateTodayChallenge(any(TodayChallenge.class))).thenReturn(1L);
-        when(challengeService.getChallengeDetail(todayChallengeDto.getChallengeId())).thenReturn(challenge);
-        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(true);
-        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(false);
+        when(challengeService.getChallengeDetail(challengeId)).thenReturn(challenge);
+        when(todayChallengeDao.checkAchievementBonus(challengeId, LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(true);
+        when(todayChallengeDao.checkAchievementBonus(challengeId, LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(false);
+        doNothing().when(userService).modifyUserExp(anyLong(), anyInt());
 
-        assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
+        boolean result = todayChallengeService.modifyTodayChallenge(todayChallengeDto);
 
-        verify(userService, times(1)).modifyUserExp(challenge.getUserId(), ExpPoints.SEVEN_DAY_STREAK_EXP);
+        verify(userService, times(1)).modifyUserExp(userId, ExpPoints.SEVEN_DAY_STREAK_EXP);
+        verify(userService, never()).modifyUserExp(userId, ExpPoints.THIRTY_DAY_STREAK_EXP);
+        verify(userService, times(1)).modifyUserExp(userId, ExpPoints.DAILY_ACHIVEMENT_EXP);
     }
     @Test
     @DisplayName("8일 내내 오늘의 챌린지 목표 달성 시, 경험치 5EXP를 추가한다.")
     void modifyTodayChallenge_getDailyExp_when8daysStreak() throws Exception {
-        Challenge challenge = new Challenge(1L, "제목1",ChallengeStatus.ONGOING, ExerciseType.SQUAT,
-                LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
-        for (int i = 1; i <= 8; i++) {
-            TodayChallenge todayChallenge = new TodayChallenge(i, 10L, challenge.getId(), LocalDate.now().minusDays(i), true);
-            when(todayChallengeDao.selectTodayChallengeById(todayChallenge.getId())).thenReturn(todayChallenge);
-        }
-        TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, challenge.getId(), LocalDate.now());
+        long challengeId = 1L;
+        long userId = 1L;
+        Challenge challenge = new Challenge(challengeId, "제목1", ChallengeStatus.ONGOING, ExerciseType.SQUAT,
+                LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, userId);
+        TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, challengeId, LocalDate.now());
+
+        TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, challengeId, LocalDate.now(), false);
+        when(todayChallengeDao.selectTodayChallengeById(anyLong())).thenReturn(todayChallenge);
 
         when(todayChallengeDao.updateTodayChallenge(any(TodayChallenge.class))).thenReturn(1L);
-        when(challengeService.getChallengeDetail(todayChallengeDto.getChallengeId())).thenReturn(challenge);
-        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(false);
-        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(false);
+        when(challengeService.getChallengeDetail(challengeId)).thenReturn(challenge);
+        when(todayChallengeDao.checkAchievementBonus(challengeId, LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(false);
+        when(todayChallengeDao.checkAchievementBonus(challengeId, LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(false);
+        when(todayChallengeDao.updateIsAchieved(anyLong())).thenReturn(1L);
+        doNothing().when(userService).modifyUserExp(anyLong(), anyInt());
 
-        assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
+        boolean result = todayChallengeService.modifyTodayChallenge(todayChallengeDto);
 
-        verify(userService, times(1)).modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
-        verify(userService, never()).modifyUserExp(challenge.getUserId(), ExpPoints.SEVEN_DAY_STREAK_EXP);
-        verify(userService, never()).modifyUserExp(challenge.getUserId(), ExpPoints.THIRTY_DAY_STREAK_EXP);
+        verify(userService, times(1)).modifyUserExp(userId, ExpPoints.DAILY_ACHIVEMENT_EXP);
+        verify(userService, never()).modifyUserExp(userId, ExpPoints.SEVEN_DAY_STREAK_EXP);
     }
     @Test
     @DisplayName("30일 내내 오늘의 챌린지 목표 달성 시, 경험치 100EXP를 추가한다.")
     void modifyTodayChallenge_get30DaysExp() throws Exception {
-        Challenge challenge = new Challenge(1L, "제목1", ChallengeStatus.ONGOING, ExerciseType.SQUAT,
-                LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, 1L);
-        for (int i = 0; i < 30; i++) {
-            TodayChallenge todayChallenge = new TodayChallenge(i, 10L, challenge.getId(), LocalDate.now().minusDays(i), true);
-            when(todayChallengeDao.selectTodayChallengeById(todayChallenge.getId())).thenReturn(todayChallenge);
-        }
-        TodayChallengeDto todayChallengeDto = new TodayChallengeDto(0, 10L, challenge.getId(), LocalDate.now());
+        long challengeId = 1L;
+        long userId = 1L;
 
+        Challenge challenge = new Challenge(challengeId, "30일 챌린지", ChallengeStatus.ONGOING, ExerciseType.PUSHUP,
+                LocalDate.now().minusDays(100), LocalDate.now(), 10L, 0, userId);
+        TodayChallengeDto todayChallengeDto = new TodayChallengeDto(1L, 10L, challengeId, LocalDate.now());
+
+        TodayChallenge todayChallenge = new TodayChallenge(1L, 10L, challengeId, LocalDate.now(), false);
+
+        when(todayChallengeDao.selectTodayChallengeById(anyLong())).thenReturn(todayChallenge);
         when(todayChallengeDao.updateTodayChallenge(any(TodayChallenge.class))).thenReturn(1L);
-        when(challengeService.getChallengeDetail(todayChallengeDto.getChallengeId())).thenReturn(challenge);
-        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(false);
-        when(todayChallengeDao.checkAchievementBonus(challenge.getId(), LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(true);
+        when(challengeService.getChallengeDetail(challengeId)).thenReturn(challenge);
+        when(todayChallengeDao.checkAchievementBonus(challengeId, LocalDate.now(), ExpPoints.SEVEN_DAY)).thenReturn(false);
+        when(todayChallengeDao.checkAchievementBonus(challengeId, LocalDate.now(), ExpPoints.THIRTY_DAY)).thenReturn(true);
+        when(todayChallengeDao.updateIsAchieved(anyLong())).thenReturn(1L);
+        doNothing().when(userService).modifyUserExp(anyLong(), anyInt());
 
-        assertTrue(todayChallengeService.modifyTodayChallenge(todayChallengeDto));
+        boolean result = todayChallengeService.modifyTodayChallenge(todayChallengeDto);
 
-        verify(userService, times(1)).modifyUserExp(challenge.getUserId(), ExpPoints.THIRTY_DAY_STREAK_EXP);
-        verify(userService, times(1)).modifyUserExp(challenge.getUserId(), ExpPoints.DAILY_ACHIVEMENT_EXP);
-        verify(userService, never()).modifyUserExp(challenge.getUserId(), ExpPoints.SEVEN_DAY_STREAK_EXP);
+        assertTrue(result);
+
+        verify(userService, times(1)).modifyUserExp(userId, ExpPoints.THIRTY_DAY_STREAK_EXP);
+        verify(userService, never()).modifyUserExp(userId, ExpPoints.SEVEN_DAY_STREAK_EXP);
     }
     @Test
     @DisplayName("오늘의 챌린지 목표를 달성하지 못했을 시, 경험치 3EXP를 차감한다.")
