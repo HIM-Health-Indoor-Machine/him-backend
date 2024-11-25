@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.him.fpjt.him_backend.exercise.dao.TodayChallengeDao">
+  <insert id="insertTodayChallenge" parameterType="TodayChallenge" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO today_challenge (cnt, challenge_id, date, is_achieved)
+    VALUES (#{cnt}, #{challengeId}, #{date}, #{isAchieved})
+  </insert>
+  <select id="selectTodayChallengeById" parameterType="long" resultType="TodayChallenge">
+    SELECT * FROM today_challenge WHERE id = #{id}
+  </select>
+  <select id="selectTodayChallengeByChallengeIdAndDate" parameterType="map" resultType="TodayChallenge">
+    SELECT * FROM today_challenge WHERE challenge_id = #{challengeId} and date = #{date}
+  </select>
+  <select id="selectTodayChallengeByUserIdAndDate" parameterType="map" resultType="TodayChallenge">
+    SELECT tc.*
+    FROM today_challenge tc
+           JOIN challenge c ON tc.challenge_id = c.id
+    WHERE c.user_id = #{userId}
+      AND tc.date = #{date}
+  </select>
+  <update id="updateTodayChallenge" parameterType="TodayChallenge">
+    UPDATE today_challenge SET cnt = #{cnt} WHERE id = #{id}
+  </update>
+  <select id="checkAchievementBonus" parameterType="map" resultType="boolean">
+    SELECT COUNT(*) = #{days}
+    FROM today_challenge
+    WHERE challenge_id = #{challengeId}
+      AND date >= DATE_SUB(#{date}, INTERVAL #{days} DAY)
+      AND cnt >= (SELECT goal_cnt FROM challenge WHERE id = #{challengeId})
+  </select>
+  <select id="findUnachievedChallenges" parameterType="java.time.LocalDate" resultType="TodayChallenge">
+    SELECT *
+    FROM today_challenge tc
+           JOIN challenge c ON tc.challenge_id = c.id
+    WHERE tc.date = #{yesterday}
+      AND c.status = 'ONGOING'
+      AND tc.cnt &lt; c.goal_cnt
+  </select>
+  <select id="selectTodayChallengeByUserIdAndDateRange" parameterType="map" resultType="TodayChallenge">
+      SELECT tc.*
+      FROM today_challenge tc
+             JOIN challenge c ON tc.challenge_id = c.id
+      WHERE c.user_id = #{userId}
+        AND tc.date BETWEEN #{startOfMonth} AND #{endOfMonth}
+  </select>
+  <update id="updateIsAchieved" parameterType="long">
+    UPDATE today_challenge SET is_achieved = true WHERE id = #{id}
+  </update>
+</mapper>

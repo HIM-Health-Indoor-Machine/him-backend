@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.him.fpjt.him_backend.exercise.dao.GameDao">
+
+    <insert id="insertGame" parameterType="Game" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO game (date, type, difficulty_level, is_achieved, user_id)
+        VALUES (#{date}, #{type}, #{difficultyLevel}, false, #{userId})
+    </insert>
+
+    <select id="findGameById" parameterType="long" resultType="Game">
+        SELECT * FROM game WHERE id = #{gameId}
+    </select>
+
+    <select id="existsAchievedGame" parameterType="map" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM game
+            WHERE DATE(date) = #{date}
+            AND type = #{type}
+            AND difficulty_level = #{difficultyLevel}
+            AND user_id = #{userId}
+            AND is_achieved = true
+        )
+    </select>
+
+    <update id="updateGameAchievement" parameterType="long">
+        UPDATE game
+        SET is_achieved = true
+        WHERE id = #{id}
+    </update>
+    <select id="selectGameByUserIdAndDateRange" parameterType="map" resultType="Game">
+        SELECT * FROM game
+        WHERE user_id = #{userId}
+          AND date BETWEEN #{startOfMonth} AND #{endOfMonth}
+    </select>
+    <select id="selectGameByUserIdAndDate" parameterType="map" resultType="Game">
+        SELECT * FROM game
+        WHERE user_id = #{userId}
+          AND date = #{date}
+    </select>
+</mapper>

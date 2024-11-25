@@ -1,14 +1,32 @@
 spring:
-  profiles:
-    active: local
----
-spring:
-  config:
-    activate:
-      on-profile: local
+  mail:
+    host: ${MAIL_HOST}
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 50000
+          starttls.enable: true
+        debug: true
   datasource:
     url: jdbc:mysql://localhost:3306/ssafydb?serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
+    username: user
     password: 1234
 
+jwt:
+  secret: ${SECRET_KEY}
+  expiration: ${JWT_EXPIRATION}
+refresh:
+  secret: ${REFRESH_SECRET_KEY}
+  expiration: ${REFRESH_EXPIRATION}
+
+mybatis:
+  mapper-locations: mappers/*.xml
+  type-aliases-package: com.him.fpjt.him_backend.exercise.domain, com.him.fpjt.him_backend.user.domain, com.him.fpjt.him_backend.auth.domain
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true

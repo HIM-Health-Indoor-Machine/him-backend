@@ -1,0 +1,78 @@
+name: Deploy to Amazon EC2
+
+on:
+  push:
+    branches:
+      - main
+      - infra/**
+      
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: him-backend-build
+  CODE_DEPLOY_APPLICATION_NAME: him-codedeploy-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: him-codedeploy-deployment-group
+  RESOURCE_PATH: ./src/main/resources/application.yml
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set Environment Variable
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ${{ env.RESOURCE_PATH }}
+        env:
+          spring.mail.host: ${{ secrets.MAIL_HOST }}
+          spring.mail.username: ${{ secrets.MAIL_USERNAME }}
+          spring.mail.password: ${{ secrets.MAIL_PASSWORD }}
+          jwt.secret: ${{ secrets.SECRET_KEY }}
+          jwt.expiration: ${{ secrets.JWT_EXPIRATION }}
+          refresh.secret: ${{ secrets.REFRESH_SECRET_KEY }}
+          refresh.expiration: ${{ secrets.REFRESH_EXPIRATION }}
+          datasource.url: ${{ secrets.DATEBASE_URL }}
+          datasource.username: ${{ secrets.DATEBASE_USERNAME }}
+          datasource.password: ${{ secrets.DATEBASE_PASSWORD }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run : ./gradlew clean build -i
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload to AWS S3
+        run: |
+          aws deploy push \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --ignore-hidden-files \
+            --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+            --source .
+
+      - name: Deploy to AWS EC2 from S3
+        run: |
+          aws deploy create-deployment \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip

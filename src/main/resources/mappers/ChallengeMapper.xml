@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.him.fpjt.him_backend.exercise.dao.ChallengeDao">
+  <insert id="insertChallenge" parameterType="Challenge">
+    INSERT INTO challenge (title, status, type, start_dt, end_dt, goal_cnt, achieved_cnt, user_id)
+        VALUES (#{title}, #{status}, #{type}, #{startDt}, #{endDt}, #{goalCnt}, #{achievedCnt}, #{userId})
+  </insert>
+  <select id="selectChallengesByStatusAndUserId" parameterType="map" resultType="Challenge">
+    SELECT * FROM challenge
+    <trim prefix="WHERE" prefixOverrides="AND | OR">
+        <if test="status != null and status != ''">
+          AND status = #{status}
+        </if>
+        <if test = "userId != null and userId != ''">
+            AND user_id = #{userId}
+        </if>
+    </trim>
+  </select>
+  <select id="selectChallenge" parameterType="long" resultType="Challenge">
+    SELECT * FROM challenge WHERE id = #{id}
+  </select>
+  <delete id="deleteChallenge" parameterType="long">
+    DELETE FROM challenge WHERE id = #{id}
+  </delete>
+  <delete id="deleteTodayChallengeByChallengeId" parameterType="long">
+    DELETE FROM today_challenge WHERE challenge_id = #{id}
+  </delete>
+  <select id="existsChallengeById" parameterType="long" resultType="boolean">
+    SELECT EXISTS (
+        SELECT 1 FROM challenge WHERE id = #{id}
+    )
+  </select>
+  <update id="updateChallengeAchieveCnt" parameterType="long">
+    UPDATE challenge SET achieved_cnt = achieved_cnt + 1 WHERE id = #{id}
+  </update>
+  <select id="existsChallengeByStartDate" parameterType="java.time.LocalDate" resultType="boolean">
+    SELECT EXISTS (
+        SELECT * FROM challenge WHERE start_dt = #{today}
+    )
+  </select>
+  <select id="existsChallengeByEndDate" parameterType="java.time.LocalDate" resultType="boolean">
+    SELECT EXISTS (
+             SELECT * FROM challenge WHERE end_dt = #{today}
+             )
+  </select>
+  <update id="updateChallengeStatus" parameterType="java.time.LocalDate">
+    UPDATE challenge
+    SET status =
+          CASE
+            WHEN end_dt = #{today} THEN 'DONE'
+            WHEN start_dt = #{today} THEN 'ONGOING'
+            ELSE status
+            END
+    WHERE start_dt = #{today} OR end_dt = #{today}
+  </update>
+  <select id="selectAllChallengeId" resultType="long">
+    SELECT id FROM challenge WHERE status = 'ONGOING'
+  </select>
+  <update id="updateChallenge" parameterType="Challenge">
+    UPDATE challenge
+    SET type = #{type}, start_dt = #{startDt}, end_dt = #{endDt}, goal_cnt = #{goalCnt}
+    WHERE id = #{id}
+  </update>
+  <select id="selectChallengeByTitle" resultType="Challenge">
+    SELECT * FROM challenge WHERE title = #{title}
+  </select>
+</mapper>
