@@ -10,8 +10,10 @@ import com.him.fpjt.him_backend.common.constants.EmailTemplates;
 import com.him.fpjt.him_backend.common.util.CodeGenerator;
 import com.him.fpjt.him_backend.common.util.EmailSender;
 import com.him.fpjt.him_backend.common.util.JwtUtil;
+import com.him.fpjt.him_backend.user.dao.AttendanceDao;
 import com.him.fpjt.him_backend.user.dao.UserDao;
 import com.him.fpjt.him_backend.auth.domain.VerificationCode;
+import com.him.fpjt.him_backend.user.domain.Attendance;
 import org.springframework.security.authentication.AuthenticationManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthServiceImpl implements AuthService {
     private final UserDao userDao;
+    private final AttendanceDao attendanceDao;
     private final RefreshTokenDao refreshTokenDao;
     private final EmailSender emailSender;
     private final CodeGenerator codeGenerator;
@@ -37,9 +40,13 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public AuthServiceImpl(UserDao userDao, RefreshTokenDao refreshTokenDao, EmailSender emailSender, CodeGenerator codeGenerator,
-                           VerificationCodeDao verificationCodeDao, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public AuthServiceImpl(UserDao userDao, AttendanceDao attendanceDao,
+            RefreshTokenDao refreshTokenDao, EmailSender emailSender, CodeGenerator codeGenerator,
+            VerificationCodeDao verificationCodeDao, PasswordEncoder passwordEncoder,
+            JwtUtil jwtUtil,
+            AuthenticationManager authenticationManager) {
         this.userDao = userDao;
+        this.attendanceDao = attendanceDao;
         this.refreshTokenDao = refreshTokenDao;
         this.emailSender = emailSender;
         this.codeGenerator = codeGenerator;
@@ -76,7 +83,6 @@ public class AuthServiceImpl implements AuthService {
         if (userDao.existsByEmail(signupDto.getEmail())) {
             throw new EmailAlreadyExistsException("이미 존재하는 이메일입니다.");
         }
-
         if (userDao.existsDuplicatedNickname(signupDto.getNickname())) {
             throw new NicknameAlreadyExistsException("이미 사용 중인 닉네임입니다.");
         }
@@ -86,6 +92,7 @@ public class AuthServiceImpl implements AuthService {
         User newUser = new User(signupDto.getNickname(), signupDto.getEmail(), encodedPassword);
 
         userDao.saveUser(newUser);
+        attendanceDao.insertAttendance(new Attendance(userDao.selectUserByEmail(signupDto.getEmail()).getId()));
     }
 
     @Transactional
