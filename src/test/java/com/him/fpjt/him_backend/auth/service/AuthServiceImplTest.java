@@ -11,7 +11,9 @@ import com.him.fpjt.him_backend.common.exception.EmailAlreadyExistsException;
 import com.him.fpjt.him_backend.common.util.CodeGenerator;
 import com.him.fpjt.him_backend.common.util.EmailSender;
 import com.him.fpjt.him_backend.common.util.JwtUtil;
+import com.him.fpjt.him_backend.user.dao.AttendanceDao;
 import com.him.fpjt.him_backend.user.dao.UserDao;
+import com.him.fpjt.him_backend.user.domain.Attendance;
 import com.him.fpjt.him_backend.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,7 @@ class AuthServiceImplTest {
 
     private AuthServiceImpl authService;
     private UserDao userDao;
+    private AttendanceDao attendanceDao;
     private RefreshTokenDao refreshTokenDao;
     private VerificationCodeDao verificationCodeDao;
     private EmailSender emailSender;
@@ -40,6 +43,7 @@ class AuthServiceImplTest {
     @BeforeEach
     void setUp() {
         userDao = mock(UserDao.class);
+        attendanceDao = mock(AttendanceDao.class);
         refreshTokenDao = mock(RefreshTokenDao.class);
         verificationCodeDao = mock(VerificationCodeDao.class);
         emailSender = mock(EmailSender.class);
@@ -48,7 +52,7 @@ class AuthServiceImplTest {
         jwtUtil = mock(JwtUtil.class);
         authenticationManager = mock(AuthenticationManager.class);
 
-        authService = new AuthServiceImpl(userDao, refreshTokenDao, emailSender, codeGenerator,
+        authService = new AuthServiceImpl(userDao, attendanceDao, refreshTokenDao, emailSender, codeGenerator,
                 verificationCodeDao, passwordEncoder, jwtUtil, authenticationManager);
     }
 
@@ -80,6 +84,9 @@ class AuthServiceImplTest {
         when(userDao.existsByEmail(signupDto.getEmail())).thenReturn(false);
         when(userDao.existsDuplicatedNickname(signupDto.getNickname())).thenReturn(false);
         when(passwordEncoder.encode(signupDto.getPassword())).thenReturn("encodedPassword");
+
+        User savedUser = new User(1L, "testUser", "test@example.com", "encodedPassword", null, null, 0L);
+        when(userDao.selectUserByEmail(signupDto.getEmail())).thenReturn(savedUser);
 
         authService.signupUser(signupDto);
 
