@@ -26,13 +26,14 @@ public class ChallengeServiceImpl implements ChallengeService {
 
     @Override
     @Transactional
-    public void createChallenge(Challenge challenge) {
+    public long createChallenge(Challenge challenge) {
         int result = challengeDao.insertChallenge(challenge);
         if (result == 0) {
             throw new IllegalStateException("챌린지 저장에 실패했습니다.");
         }
         Challenge savedChallenge = challengeDao.selectChallengeByTitle(challenge.getTitle());
         todayChallengeDao.insertTodayChallenge(new TodayChallenge(0, savedChallenge.getId(), LocalDate.now(), false));
+        return savedChallenge.getId();
     }
 
     @Override

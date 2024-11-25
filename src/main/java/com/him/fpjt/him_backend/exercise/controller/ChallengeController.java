@@ -28,9 +28,9 @@ public class ChallengeController {
         this.challengeService = challengeService;
     }
     @PostMapping
-    public ResponseEntity<String> createChallenge(@RequestBody Challenge challenge) {
-        challengeService.createChallenge(challenge);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<?> createChallenge(@RequestBody Challenge challenge) {
+        long challengeId = challengeService.createChallenge(challenge);
+        return ResponseEntity.status(HttpStatus.CREATED).body(challengeId);
     }
     @GetMapping
     public ResponseEntity<?> getChallengeByStatusAndUserId(@RequestParam(value = "userId", defaultValue = "true") long userId,

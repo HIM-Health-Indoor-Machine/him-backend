@@ -6,7 +6,7 @@ import com.him.fpjt.him_backend.exercise.dto.ChallengeDto;
 import java.util.List;
 
 public interface ChallengeService {
-    public void createChallenge(Challenge challenge);
+    public long createChallenge(Challenge challenge);
     public List<Challenge> getChallengeByStatusAndUserId(long userId, ChallengeStatus status);
     public Challenge getChallengeDetail(long id);
     public void modifyChallenge(long id, ChallengeDto challengeDto);
