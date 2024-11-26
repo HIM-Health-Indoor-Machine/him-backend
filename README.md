@@ -53,13 +53,16 @@ HIM은 운동 포즈 인식 기술을 활용하여 집 안에서도 꾸준히 �
 ![HIM_api1](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2F1b3ac1b9-d37a-41d2-aba0-91370b72c76f%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_6.57.08.png/size/w=1360?exp=1732702262&sig=r9AXck7hDPmmV7eZzZtoFf0G9b7NyXuB0PbpnC6SPRc)
 ![HIM_api2](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2Fd18b2e25-cfa1-4001-a85a-e8a91f911340%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_6.57.47.png/size/w=1360?exp=1732702270&sig=lFQPb06im4hOOZoN5e2G_d8Ymze-CXaF4MXrfhozCfo)
 ### Flow Chart
-![HIM_flow_마이](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2Fcb488adf-1114-4023-99d2-3cc8a353834b%2F3.png/size/w=1170?exp=1732698539&sig=eF4ogc5xX1igwxuvJNy7ksyxObpaivtsZumj-eb2v5g)
-![HIM_flow_챌린지](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2F064c39a2-06ba-49e5-88b0-95c43c24ae2e%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_1.56.20.png/size/w=990?exp=1732698564&sig=qaQrwav-6-o8sGDIPvN0XcLwyjXsF144Pwi9eCW9hNc)
-![HIM_flow_게임](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2F614df3db-739a-4285-8fe2-0fad8fd85965%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_1.54.23.png/size/w=1150?exp=1732698562&sig=o1N_bhNWiLWRluFQYJF93CxHh9Z9HY3bf6k9KZ-oC_w)
+<img src="https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2Fcb488adf-1114-4023-99d2-3cc8a353834b%2F3.png/size/w=1170?exp=1732698539&sig=eF4ogc5xX1igwxuvJNy7ksyxObpaivtsZumj-eb2v5g" alt="HIM_flow_마이" width="300">
+<img src="https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2F064c39a2-06ba-49e5-88b0-95c43c24ae2e%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_1.56.20.png/size/w=990?exp=1732698564&sig=qaQrwav-6-o8sGDIPvN0XcLwyjXsF144Pwi9eCW9hNc" alt="HIM_flow_챌린지" width="300">
+<img src="https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2F614df3db-739a-4285-8fe2-0fad8fd85965%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_1.54.23.png/size/w=1150?exp=1732698562&sig=o1N_bhNWiLWRluFQYJF93CxHh9Z9HY3bf6k9KZ-oC_w" alt="HIM_flow_게임" width="300">
+
 ### 시스템 아키텍처
 ![HIM_sys](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2Fd40cb0ce-bf27-4b3c-9671-6ce2f2115cbe%2Fimage.png/size/w=1360?exp=1732698514&sig=RB1As35U_X-AwTSuVoi1-sNiI43W7MtVyzTG_c8JY30)
+
 ### 유스케이스 다이어그램
 ![HIM_use](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2F4740804f-769c-4c8a-b348-df750a50b09d%2Fhim_usecase.drawio_(1).png/size/w=1280?exp=1732696529&sig=-S9tK_3_DeFP_Hdo49VuI3e53Hcbx_srYZ5LyFRdf8o)
+
 ## 서비스 화면
 - 시작 화면
 ![HIM_시작](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2F06231a2a-3ed5-4a02-bed1-93155e11a17c%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.40.10.png/size/w=1360?exp=1732697973&sig=ILckHIITABIJN1N1tASMxUMmY6sGWzDuDrVfw8oCPyQ)
@@ -90,6 +93,3 @@ HIM은 운동 포즈 인식 기술을 활용하여 집 안에서도 꾸준히 �
 ![HIM_로딩중](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2F44836c98-2a07-4d99-b91e-4c9ce19ff3ad%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.44.53.png/size/w=1360?exp=1732698415&sig=yc_MmbV2fpLcyw6eaYvlSbSKpO8AUcA4KLvTV2u5Ul0)
 ![HIM_성공](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2Fd154b352-5d9a-4452-8690-d7e442e6717f%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.50.53.png/size/w=1360?exp=1732698417&sig=9fulVYKSBgfTPjz3TFo2vft9owSHcu3W219f2dooi8k)
 ![HIM_실패](https://img.notionusercontent.com/s3/prod-files-secure%2F04bdd53f-d388-47e1-a42c-aaa9b65be2b3%2Fa53c9431-a3d9-4340-9466-553b80d383a6%2F%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-11-26_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.48.40.png/size/w=1360?exp=1732698419&sig=hjj44Vy_Ee8trZYlvWRr3IWHRwz9bGovZQo3KxEXGbQ)
-
-
-
